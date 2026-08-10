@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Tilemaps; // Bắt buộc phải thêm dòng này để Unity hiểu Tilemap là gì
 
 public class TowerDrag : MonoBehaviour
 {
@@ -7,6 +8,9 @@ public class TowerDrag : MonoBehaviour
     
     public string elementType = "Lua"; 
     public int towerLevel = 1;
+
+    // Khai báo Tilemap để nhận diện ô Đặt Tháp
+    public Tilemap placementTilemap;
 
     // Các hàm phải nằm ngoài cùng thế này, không bị lọt vào hàm nào khác
     void OnMouseDown()
@@ -24,20 +28,40 @@ public class TowerDrag : MonoBehaviour
     }
 
     void OnMouseUp()
+{
+    isDragging = false;
+    
+    // Tự động tìm cái Tilemap có tên chính xác là "Tilemap" trong Scene
+    if (placementTilemap == null)
     {
-        isDragging = false;
-        
-        // Tọa độ ô lưới mà chuột đang thả ra
-        Vector2 snapPos = new Vector2(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y));
-        
-        // Dùng tia vật lý quét xem ở ô này CÓ THÁP NÀO KHÁC đang đứng không?
+        GameObject tilemapObj = GameObject.Find("Tilemap"); 
+        if (tilemapObj != null)
+        {
+            placementTilemap = tilemapObj.GetComponent<Tilemap>();
+        }
+    }
+
+    // Nếu vẫn không tìm thấy thì báo lỗi để kiểm tra lại tên
+    if (placementTilemap == null)
+    {
+        Debug.LogError("Không tìm thấy Tilemap nào tên là 'Tilemap' trong Scene!");
+        transform.position = originalPosition;
+        return;
+    }
+
+    // --- Các đoạn code bên dưới giữ nguyên y cũ của m ---
+    Vector3Int cellPos = placementTilemap.WorldToCell(transform.position);
+    
+    if (placementTilemap.HasTile(cellPos))
+    {
+        Vector3 snapPos = placementTilemap.GetCellCenterWorld(cellPos);
         Collider2D[] colliders = Physics2D.OverlapPointAll(snapPos);
         TowerDrag targetTower = null;
 
         foreach (Collider2D col in colliders)
         {
             TowerDrag tower = col.GetComponent<TowerDrag>();
-            if (tower != null && tower != this) // Tìm thấy tháp khác (không phải chính mình)
+            if (tower != null && tower != this)
             {
                 targetTower = tower;
                 break;
@@ -46,19 +70,20 @@ public class TowerDrag : MonoBehaviour
 
         if (targetTower != null)
         {
-            // CÓ THÁP KHÁC Ở ĐÓ -> Kích hoạt thuật toán Gộp
             bool canMerge = MergeManager.Instance.TryMerge(this, targetTower);
-            
             if (!canMerge) 
             {
-                // Nếu sai công thức, gộp thất bại -> Nảy về chỗ cũ lúc mới nhấc lên
                 transform.position = originalPosition;
             }
         }
         else
         {
-            // Ô TRỐNG -> Đặt tháp xuống bình thường
             transform.position = snapPos;
         }
     }
+    else
+    {
+        transform.position = originalPosition;
+    }
+}
 }

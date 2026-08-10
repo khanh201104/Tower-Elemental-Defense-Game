@@ -78,8 +78,8 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -549923467
+  m_SortingLayer: 4
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
@@ -106,3 +106,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Bullet
   speed: 10
   damage: 1
+  aoeRadius: 0
+  isCritBullet: 0
+  critChance: 0.2
+  critMultiplier: 2
+  isSlowBullet: 0
+  slowPercentage: 0.5
+  slowDuration: 2
+  isBurnBullet: 0
+  burnDamagePerTick: 1
+  burnDuration: 3
+  burnTickRate: 1

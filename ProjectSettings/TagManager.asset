@@ -42,5 +42,17 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Map
+    uniqueID: 2389964373
+    locked: 0
+  - name: Enemy
+    uniqueID: 1024894503
+    locked: 0
+  - name: Tower
+    uniqueID: 3700922781
+    locked: 0
+  - name: Bullet
+    uniqueID: 3745043829
+    locked: 0
   m_RenderingLayers:
   - Default
