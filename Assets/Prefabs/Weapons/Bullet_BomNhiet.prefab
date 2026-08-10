@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3414142021179287214}
   - component: {fileID: 239915312464995486}
   m_Layer: 0
-  m_Name: Bullet_No
+  m_Name: Bullet_BomNhiet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -82,8 +82,8 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
-  m_Color: {r: 1, g: 0.5490196, b: 0, a: 1}
+  m_Sprite: {fileID: 21300000, guid: 513649ec7b9441c48bc93e6161ffee4f, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
