@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 4270170540388654211}
   - component: {fileID: 6978161203830903015}
   - component: {fileID: 3830139467410809262}
+  - component: {fileID: 2170583614563618469}
   m_Layer: 0
   m_Name: Tower_DungNham_Lv3
   m_TagString: Tower
@@ -170,3 +171,16 @@ MonoBehaviour:
   range: 5
   fireRate: 2
   bulletPrefab: {fileID: 1871464989850264738, guid: ab8fe282936de6d4e98fad2c36cd9678, type: 3}
+--- !u!114 &2170583614563618469
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3537623274961729394}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63f99ce5ead12fc47840d684ac1a295c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TowerHealth
+  maxHealth: 30

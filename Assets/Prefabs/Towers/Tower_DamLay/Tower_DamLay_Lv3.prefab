@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5884348608853506910}
   - component: {fileID: 2903494698622531251}
   - component: {fileID: 2066246172293616434}
+  - component: {fileID: -2680856770008574200}
   m_Layer: 0
   m_Name: Tower_DamLay_Lv3
   m_TagString: Tower
@@ -170,3 +171,16 @@ MonoBehaviour:
   range: 5
   fireRate: 2
   bulletPrefab: {fileID: 1871464989850264738, guid: 098264a46f1437d42a3692a45b3cd31a, type: 3}
+--- !u!114 &-2680856770008574200
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8196816207057554310}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63f99ce5ead12fc47840d684ac1a295c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TowerHealth
+  maxHealth: 30

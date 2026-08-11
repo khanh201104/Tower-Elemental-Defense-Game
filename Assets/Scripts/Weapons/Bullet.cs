@@ -119,12 +119,15 @@ public class Bullet : MonoBehaviour
         // 3. HÚT MÁU (Gửi máu về cho tháp)
         if (isLifestealBullet && shooterTower != null)
         {
-            int healAmount = Mathf.Max(1, Mathf.RoundToInt(finalDamage * lifestealPercent)); // Ít nhất hút được 1 máu
+            // Tính số máu hút được
+            float healAmount = Mathf.Max(1f, finalDamage * lifestealPercent); 
             
-            // Gọi hàm Hồi máu của Tháp (Lát mình sẽ tạo Script này)
-            // shooterTower.GetComponent<TowerHealth>().Heal(healAmount); 
-            
-            Debug.Log("Đạn đã hút " + healAmount + " máu đem về cho Tháp Đất!");
+            // Tìm tháp gốc và bơm máu cho nó
+            TowerHealth tHealth = shooterTower.GetComponent<TowerHealth>();
+            if (tHealth != null)
+            {
+                tHealth.Heal(healAmount); 
+            }
         }
 
         // 4. Trát bùn làm chậm 

@@ -40,11 +40,15 @@ public class EnemyBullet : MonoBehaviour
 
     void HitTarget()
     {
-        Debug.Log("BÙM! Đạn của quái trúng tháp, gây " + bulletDamage + " sát thương!");
-        
-        // TODO: Lát nữa sang phần Hệ thống Máu Tháp, mình sẽ móc code trừ máu vào đây!
-
-        // Trúng đích xong thì viên đạn phải biến mất
+        if (targetTower != null)
+        {
+            TowerHealth tHealth = targetTower.GetComponent<TowerHealth>();
+            if (tHealth != null)
+            {
+                tHealth.TakeDamage(bulletDamage);
+                Debug.Log("💣 Đạn của quái trúng tháp, gây " + bulletDamage + " sát thương!");
+            }
+        }
         Destroy(gameObject);
     }
 }

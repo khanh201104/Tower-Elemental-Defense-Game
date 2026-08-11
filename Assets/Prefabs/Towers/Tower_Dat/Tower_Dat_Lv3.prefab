@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5046833874916809830}
   - component: {fileID: 7638850580292242908}
   - component: {fileID: 7763644495313502389}
+  - component: {fileID: 9185146719065407182}
   m_Layer: 0
   m_Name: Tower_Dat_Lv3
   m_TagString: Tower
@@ -170,3 +171,16 @@ MonoBehaviour:
   range: 5
   fireRate: 2
   bulletPrefab: {fileID: 1871464989850264738, guid: 6904d234795fffa4eb1c6dde9fe5632d, type: 3}
+--- !u!114 &9185146719065407182
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5620580406772248784}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63f99ce5ead12fc47840d684ac1a295c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TowerHealth
+  maxHealth: 80

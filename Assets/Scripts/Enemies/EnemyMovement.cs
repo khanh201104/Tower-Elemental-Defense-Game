@@ -22,6 +22,8 @@ public class EnemyMovement : MonoBehaviour
 
     [Header("VFX")]
     public GameObject iceVFX; // Kéo object hình cục băng vào đây
+    [Header("Hình ảnh")]
+    private SpriteRenderer spriteRenderer;
     void Start()
     {
         currentSpeed = baseSpeed; 
@@ -31,6 +33,7 @@ public class EnemyMovement : MonoBehaviour
         {
             waypoints[i] = pathFolder.GetChild(i);
         }
+        spriteRenderer = GetComponentInChildren<SpriteRenderer>();
     }
 
     void Update()
@@ -120,8 +123,13 @@ public class EnemyMovement : MonoBehaviour
         // QUÁI CẬN CHIẾN & BOSS: Không có viên đạn -> Gây sát thương trực tiếp
         else
         {
-            Debug.Log("CHÉM! " + gameObject.name + " chém cận chiến vào tháp gây " + damage + " dame!");
-            // TODO: Trừ máu trực tiếp ở đây
+            // QUÁI CẬN CHIẾN & BOSS: Chém trực tiếp
+            TowerHealth tHealth = currentTargetTower.GetComponent<TowerHealth>();
+            if (tHealth != null)
+            {
+                tHealth.TakeDamage(damage);
+                Debug.Log("⚔️ " + gameObject.name + " chém cận chiến gây " + damage + " dame!");
+            }
         }
     }
 
@@ -133,8 +141,29 @@ public class EnemyMovement : MonoBehaviour
         if (targetIndex < waypoints.Length)
         {
             Transform targetPoint = waypoints[targetIndex];
+
+            // --- CODE THÊM MỚI: TỰ ĐỘNG QUAY ĐẦU ---
+            if (spriteRenderer != null)
+            {
+                // Lấy tọa độ đích trừ đi tọa độ hiện tại để biết đang đi hướng nào
+                float directionX = targetPoint.position.x - transform.position.x;
+                
+                // LƯU Ý: Vì ảnh gốc AI gen ra đang quay sang TRÁI
+                if (directionX > 0.1f) 
+                {
+                    spriteRenderer.flipX = true;  // Đang đi sang PHẢI -> Phải lật cái ảnh lại
+                }
+                else if (directionX < -0.1f)
+                {
+                    spriteRenderer.flipX = false; // Đang đi sang TRÁI -> Giữ nguyên ảnh gốc
+                }
+            }
+            // --------------------------------------
+
+            // Di chuyển quái
             transform.position = Vector3.MoveTowards(transform.position, targetPoint.position, currentSpeed * Time.deltaTime);
 
+            // Kiểm tra đến điểm đích chưa
             if (Vector3.Distance(transform.position, targetPoint.position) < 0.1f)
             {
                 targetIndex++;
@@ -143,7 +172,10 @@ public class EnemyMovement : MonoBehaviour
         else
         {
             // Chạy đến cuối đường -> Đụng nhà chính
-            Debug.Log("Quái vật đã lọt vào nhà chính!");
+            if (BaseHealth.Instance != null)
+            {
+                BaseHealth.Instance.TakeDamage(damage); // Cắn nhà chính!
+            }
             Destroy(gameObject); 
         }
     }
