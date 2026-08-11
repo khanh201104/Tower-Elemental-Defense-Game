@@ -46,7 +46,7 @@ public class TowerAttack : MonoBehaviour
             GameObject bulletGO = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
             
             // Truyền tọa độ con quái cho viên đạn đuổi theo
-            bulletGO.GetComponent<Bullet>().Seek(nearestEnemy.transform);
+            bulletGO.GetComponent<Bullet>().Seek(nearestEnemy.transform,gameObject);
             
             // Reset thời gian chờ
             fireCountdown = 1f / fireRate;

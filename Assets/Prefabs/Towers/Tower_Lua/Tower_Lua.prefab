@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 7763644495313502389}
   m_Layer: 0
   m_Name: Tower_Lua
-  m_TagString: Untagged
+  m_TagString: Tower
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -154,6 +154,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TowerDrag
   elementType: Lua
   towerLevel: 1
+  placementTilemap: {fileID: 0}
 --- !u!114 &7763644495313502389
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -5,11 +5,23 @@ public class EnemyHealth : MonoBehaviour
     public int hp = 3; 
     public int goldReward = 15; 
 
+    [Header("VFX - Hình ảnh")]
+    public GameObject fireVFX; // Kéo object hình lửa của m vào đây
+
     [Header("Hiệu ứng Đốt Máu")]
     private float burnTimer = 0f;        // Thời gian bị cháy còn lại
     private float burnTickTimer = 0f;    // Đồng hồ đếm ngược từng nhịp (tick)
     private int burnDamage = 0;          // Mỗi nhịp cháy mất bao nhiêu máu?
     private float burnTickInterval = 1f; // Tốc độ cháy (VD: 1 giây mất máu 1 lần)
+
+    void Start()
+    {
+        // Mới sinh ra thì đảm bảo ngọn lửa đang tắt
+        if (fireVFX != null)
+        {
+            fireVFX.SetActive(false);
+        }
+    }
 
     void Update()
     {
@@ -24,6 +36,12 @@ public class EnemyHealth : MonoBehaviour
             {
                 TakeDamage(burnDamage);           // Trừ máu
                 burnTickTimer = burnTickInterval; // Reset lại đồng hồ chờ cho nhịp sau
+            }
+
+            // Kiểm tra xem nếu vừa trừ xong mà hết thời gian cháy -> Tắt hình ảnh lửa đi
+            if (burnTimer <= 0)
+            {
+                if (fireVFX != null) fireVFX.SetActive(false);
             }
         }
     }
@@ -45,5 +63,11 @@ public class EnemyHealth : MonoBehaviour
         burnTimer = duration;
         burnTickInterval = interval;
         burnTickTimer = interval; // Đợi hết 1 nhịp (VD: 1s) rồi mới đốt phát đầu tiên
+
+        // Kích hoạt hình ảnh lửa cháy bùng lên
+        if (fireVFX != null)
+        {
+            fireVFX.SetActive(true);
+        }
     }
 }

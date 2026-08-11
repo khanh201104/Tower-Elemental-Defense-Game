@@ -707,10 +707,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5c68567bd9bf794f8fcb7af85c1e3e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WaveSpawner
-  enemyPrefab: {fileID: 5395144246103255306, guid: 204fa4def86c3f9489ff0f603f1f6a8b, type: 3}
+  waves:
+  - enemyGroups:
+    - enemyPrefab: {fileID: 5395144246103255306, guid: 204fa4def86c3f9489ff0f603f1f6a8b, type: 3}
+      count: 10
+      rate: 1
+    - enemyPrefab: {fileID: 5395144246103255306, guid: cfa32921e7967a8458795e7e8e6cd058, type: 3}
+      count: 5
+      rate: 2
+  - enemyGroups:
+    - enemyPrefab: {fileID: 5395144246103255306, guid: 204fa4def86c3f9489ff0f603f1f6a8b, type: 3}
+      count: 15
+      rate: 1
+    - enemyPrefab: {fileID: 5395144246103255306, guid: cfa32921e7967a8458795e7e8e6cd058, type: 3}
+      count: 10
+      rate: 2
+  - enemyGroups:
+    - enemyPrefab: {fileID: 5395144246103255306, guid: 204fa4def86c3f9489ff0f603f1f6a8b, type: 3}
+      count: 20
+      rate: 1
+    - enemyPrefab: {fileID: 5395144246103255306, guid: cfa32921e7967a8458795e7e8e6cd058, type: 3}
+      count: 10
+      rate: 2
+    - enemyPrefab: {fileID: 5395144246103255306, guid: 28b60313440ba6d4e9d785cf3c43c718, type: 3}
+      count: 2
+      rate: 1
   spawnPoint: {fileID: 937930885}
-  enemiesPerWave: 30
-  timeBetweenSpawns: 0.5
 --- !u!4 &297629556
 Transform:
   m_ObjectHideFlags: 0
@@ -1339,7 +1361,7 @@ Transform:
   m_GameObject: {fileID: 937930884}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 7.94, y: 1.97, z: 0}
+  m_LocalPosition: {x: 7.7, y: 2.1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3993,10 +4015,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5c68567bd9bf794f8fcb7af85c1e3e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WaveSpawner
-  enemyPrefab: {fileID: 0}
+  waves: []
   spawnPoint: {fileID: 0}
-  enemiesPerWave: 5
-  timeBetweenSpawns: 1.5
 --- !u!1 &1991168429
 GameObject:
   m_ObjectHideFlags: 0

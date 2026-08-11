@@ -3,16 +3,19 @@ using UnityEngine;
 public class Bullet : MonoBehaviour
 {
     private Transform target;
+    private GameObject shooterTower; // Lưu lại tháp nào đã bắn viên đạn này để truyền máu về
+
     public float speed = 15f;
     public int damage = 1;
     
     [Header("Hiệu ứng nổ (AOE)")]
     public float aoeRadius = 0f; // Để bằng 0 thì nó là đạn đơn mục tiêu
+    public GameObject explosionVFX; // Kéo Prefab vụ nổ vào đây
 
     [Header("Chí mạng (Crit)")]
     public bool isCritBullet = false;
-    [Range(0f, 1f)] public float critChance = 0.2f; // Tỉ lệ 20%
-    public int critMultiplier = 2; // X2 sát thương khi nổ Crit
+    [Range(0f, 1f)] public float critChance = 0.2f; 
+    public int critMultiplier = 2; 
 
     [Header("Hiệu ứng Làm chậm (CC)")]
     public bool isSlowBullet = false; 
@@ -25,9 +28,16 @@ public class Bullet : MonoBehaviour
     public float burnDuration = 3f;        
     public float burnTickRate = 1f;        
 
-    public void Seek(Transform _target)
+    [Header("Hiệu ứng Hút máu (Tháp Đất/Tank)")]
+    public bool isLifestealBullet = false; 
+    [Range(0f, 1f)] public float lifestealPercent = 0.5f; // Hút 50% lượng sát thương gây ra thành máu
+
+    
+    // Nâng cấp hàm Seek để tháp khi bắn có thể nhồi thông tin của nó vào viên đạn
+    public void Seek(Transform _target, GameObject _shooter)
     {
         target = _target;
+        shooterTower = _shooter; 
     }
 
     void Update()
@@ -37,6 +47,11 @@ public class Bullet : MonoBehaviour
             Destroy(gameObject);
             return;
         }
+
+        // Bổ sung: Xoay đầu viên đạn hướng về phía mục tiêu
+        Vector3 dir = target.position - transform.position;
+        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
 
         transform.position = Vector3.MoveTowards(transform.position, target.position, speed * Time.deltaTime);
 
@@ -48,6 +63,17 @@ public class Bullet : MonoBehaviour
 
     void HitTarget()
     {
+        // 1. SINH RA HÌNH ẢNH VỤ NỔ (VFX)
+        if (explosionVFX != null)
+        {
+            // Đẻ cái hình ảnh nổ ra tại đúng vị trí viên đạn vừa chạm đích
+            GameObject effectIns = Instantiate(explosionVFX, transform.position, transform.rotation);
+            
+            // Xóa hình ảnh vụ nổ sau 2 giây để không bị rác bộ nhớ game
+            Destroy(effectIns, 2f); 
+        }
+
+        // 2. GÂY SÁT THƯƠNG
         if (aoeRadius > 0f)
         {
             Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, aoeRadius);
@@ -64,16 +90,22 @@ public class Bullet : MonoBehaviour
             ApplyEffects(target.gameObject);
         }
 
+        // 3. XÓA VIÊN ĐẠN
         Destroy(gameObject);
     }
 
     void ApplyEffects(GameObject enemyGo)
     {
-        // 1. TÍNH TOÁN SÁT THƯƠNG CHÍ MẠNG (Dành cho Đất)
+        // Lấy component ra trước và kiểm tra an toàn (tránh lỗi Null Reference)
+        EnemyHealth eHealth = enemyGo.GetComponent<EnemyHealth>();
+        EnemyMovement eMove = enemyGo.GetComponent<EnemyMovement>();
+
+        if (eHealth == null) return; 
+
+        // 1. TÍNH TOÁN SÁT THƯƠNG CHÍ MẠNG
         int finalDamage = damage;
         if (isCritBullet)
         {
-            // Random.value sẽ quay xổ số ra một con số từ 0.0 đến 1.0
             if (Random.value <= critChance)
             {
                 finalDamage *= critMultiplier;
@@ -81,19 +113,30 @@ public class Bullet : MonoBehaviour
             }
         }
 
-        // 2. Trừ máu gốc 
-        enemyGo.GetComponent<EnemyHealth>().TakeDamage(finalDamage);
+        // 2. Trừ máu gốc của quái
+        eHealth.TakeDamage(finalDamage);
 
-        // 3. Trát bùn làm chậm (Dành cho Nước)
-        if (isSlowBullet)
+        // 3. HÚT MÁU (Gửi máu về cho tháp)
+        if (isLifestealBullet && shooterTower != null)
         {
-            enemyGo.GetComponent<EnemyMovement>().ApplySlow(slowPercentage, slowDuration);
+            int healAmount = Mathf.Max(1, Mathf.RoundToInt(finalDamage * lifestealPercent)); // Ít nhất hút được 1 máu
+            
+            // Gọi hàm Hồi máu của Tháp (Lát mình sẽ tạo Script này)
+            // shooterTower.GetComponent<TowerHealth>().Heal(healAmount); 
+            
+            Debug.Log("Đạn đã hút " + healAmount + " máu đem về cho Tháp Đất!");
         }
 
-        // 4. Châm lửa đốt máu (Dành cho Lửa)
+        // 4. Trát bùn làm chậm 
+        if (isSlowBullet && eMove != null)
+        {
+            eMove.ApplySlow(slowPercentage, slowDuration);
+        }
+
+        // 5. Châm lửa đốt máu
         if (isBurnBullet)
         {
-            enemyGo.GetComponent<EnemyHealth>().ApplyBurn(burnDamagePerTick, burnDuration, burnTickRate);
+            eHealth.ApplyBurn(burnDamagePerTick, burnDuration, burnTickRate);
         }
     }
 

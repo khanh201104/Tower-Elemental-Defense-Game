@@ -1,29 +1,52 @@
 using System.Collections;
+using System.Collections.Generic; 
 using UnityEngine;
+
+[System.Serializable] 
+public class EnemyGroup
+{
+    public GameObject enemyPrefab;    
+    public int count;                 
+    public float rate;                
+}
+
+[System.Serializable]
+public class Wave
+{
+    public EnemyGroup[] enemyGroups;  
+}
 
 public class WaveSpawner : MonoBehaviour
 {
-    [Header("Cài đặt đợt lính")]
-    public GameObject enemyPrefab;    // Quái gì sẽ được đẻ?
-    public Transform spawnPoint;      // Đẻ ở đâu?
-    public int enemiesPerWave = 5;    // Số lượng quái mỗi đợt
-    public float timeBetweenSpawns = 1.5f; // Thời gian nghỉ giữa 2 con quái
+    [Header("Cài đặt các Đợt lính (Waves)")]
+    public Wave[] waves;              
+    public Transform spawnPoint;      
 
-    private bool isSpawning = false;  // Biến khóa để chặn spam click nút
+    private int currentWaveIndex = 0; 
+    private bool isSpawning = false;  
+    
+    // Biến đếm xem đang có bao nhiêu nhóm quái đang đẻ
+    private int activeGroups = 0; 
 
     void Start()
     {
-        // Tự động nhả đợt đầu tiên lúc mới vào game
-        StartCoroutine(SpawnWaveCoroutine()); 
+        if (waves.Length > 0)
+        {
+            StartCoroutine(SpawnWaveCoroutine());
+        }
     }
 
-    // Nút Bấm ngoài UI sẽ gọi vào hàm này
     public void CallNextWave()
     {
-        // Nếu đang đẻ quái rồi thì không cho đẻ thêm để tránh lỗi đè lên nhau
         if (isSpawning)
         {
             Debug.LogWarning("Quái đang ra rồi, từ từ hẵng bấm!");
+            return;
+        }
+
+        if (currentWaveIndex >= waves.Length)
+        {
+            Debug.Log("Đã hết tất cả các đợt quái. Chờ Win game!");
             return;
         }
         
@@ -32,30 +55,59 @@ public class WaveSpawner : MonoBehaviour
 
     IEnumerator SpawnWaveCoroutine()
     {
-        // --- HỆ THỐNG CHECK LỖI TRƯỚC KHI CHẠY ---
-        if (enemyPrefab == null)
-        {
-            Debug.LogError("LỖI: Chưa kéo con Quái (Enemy Prefab) vào slot của WaveSpawner!");
-            yield break; // Ngừng luôn, không chạy code bên dưới nữa
-        }
         if (spawnPoint == null)
         {
-            Debug.LogError("LỖI: Chưa kéo điểm xuất phát (Spawn Point) vào slot của WaveSpawner!");
+            Debug.LogError("LỖI: Chưa kéo điểm xuất phát (Spawn Point) vào WaveSpawner!");
             yield break;
         }
-        // ------------------------------------------
 
-        isSpawning = true; // Khóa lại không cho bấm nữa
-        Debug.Log("Bắt đầu đẻ " + enemiesPerWave + " con quái!");
+        isSpawning = true;
+        Wave currentWave = waves[currentWaveIndex];
+        
+        // Cập nhật số lượng nhóm quái sẽ xuất hiện trong đợt này
+        activeGroups = currentWave.enemyGroups.Length;
 
-        for (int i = 0; i < enemiesPerWave; i++)
+        // Bắn tín hiệu cho TẤT CẢ các nhóm cùng đẻ MỘT LÚC
+        foreach (EnemyGroup group in currentWave.enemyGroups)
         {
-            Instantiate(enemyPrefab, spawnPoint.position, Quaternion.identity);
-            
-            // Chờ một khoảng thời gian (1.5s) rồi đẻ con tiếp theo
-            yield return new WaitForSeconds(timeBetweenSpawns);
+            if (group.enemyPrefab == null)
+            {
+                Debug.LogError("LỖI: Có nhóm quái trống Prefab!");
+                activeGroups--; // Trừ đi vì nhóm này bị lỗi không chạy
+                continue; 
+            }
+
+            // Gọi hàm đẻ quái chạy song song cho từng nhóm
+            StartCoroutine(SpawnGroupCoroutine(group));
         }
 
-        isSpawning = false; // Đẻ xong hết rồi thì mở khóa ra cho nút bấm hoạt động lại
+        // Chờ đến khi TẤT CẢ các nhóm đều đẻ xong (biến activeGroups đếm ngược về 0)
+        while (activeGroups > 0)
+        {
+            yield return null; // Dừng lại 1 frame rồi check tiếp
+        }
+
+        // Đẻ xong sạch sẽ mọi loại quái
+        isSpawning = false;
+        currentWaveIndex++; 
+    }
+
+    // Hàm đẻ quái riêng biệt cho từng nhóm (chạy song song)
+    IEnumerator SpawnGroupCoroutine(EnemyGroup group)
+    {
+        for (int i = 0; i < group.count; i++)
+        {
+            // Tạo một độ lệch ngẫu nhiên nhỏ xíu để quái không bị đè dính chặt lên nhau
+            Vector3 randomOffset = new Vector3(Random.Range(-0.3f, 0.3f), Random.Range(-0.3f, 0.3f), 0);
+            Vector3 finalSpawnPos = spawnPoint.position + randomOffset;
+
+            Instantiate(group.enemyPrefab, finalSpawnPos, Quaternion.identity);
+            
+            // Chờ thời gian nghỉ của riêng loại quái này
+            yield return new WaitForSeconds(group.rate);
+        }
+        
+        // Nhóm này đẻ xong rồi -> Trừ bộ đếm đi 1
+        activeGroups--; 
     }
 }

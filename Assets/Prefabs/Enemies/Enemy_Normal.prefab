@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 8697005906815570129}
   - component: {fileID: 1693619669780114245}
   m_Layer: 0
-  m_Name: Enemy_Slime
+  m_Name: Enemy_Normal
   m_TagString: Enemy
   m_Icon: {fileID: 7250588514170254948, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -106,7 +106,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c595ae95178a21c43bb4c638d5b8939f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMovement
-  baseSpeed: 3
+  baseSpeed: 2
+  attackRange: 1
+  damage: 1
+  attackCooldown: 0.5
 --- !u!114 &8697005906815570129
 MonoBehaviour:
   m_ObjectHideFlags: 0
