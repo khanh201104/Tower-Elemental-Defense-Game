@@ -8,10 +8,7 @@ public class ShopManager : MonoBehaviour
     public GameObject thapDatPrefab;
 
     [Header("Vị trí xuất hiện")]
-    public Transform spawnPoint; // Chỗ tháp rớt xuống sau khi mua
-
-    // Nếu muốn mua mất tiền thì mở comment mấy dòng GameEconomy ra
-    // public int towerPrice = 15; 
+    public Transform spawnPoint; // Chỗ tháp rớt xuống (Đảm bảo vị trí này nằm trên ô tile_placement)
 
     public void BuyThapLua()
     {
@@ -30,19 +27,31 @@ public class ShopManager : MonoBehaviour
 
     void SpawnTower(GameObject prefab)
     {
-        /* Bật đoạn này lên nếu muốn trừ tiền thật
-        if (GameEconomy.Instance.currentGold >= towerPrice)
+        if (prefab == null || spawnPoint == null)
         {
-            GameEconomy.Instance.SpendGold(towerPrice);
-            Instantiate(prefab, spawnPoint.position, Quaternion.identity);
+            Debug.LogWarning("⚠️ Chưa gán Prefab tháp hoặc SpawnPoint trong Inspector!");
+            return;
+        }
+
+        // 1. Thử đặt tháp thông qua TowerPlacementManager (Kiểm tra đúng ô tile_placement & căn giữa ô)
+        if (TowerPlacementManager.Instance != null)
+        {
+            bool success = TowerPlacementManager.Instance.TryPlaceTower(prefab, spawnPoint.position);
+            
+            if (!success)
+            {
+                Debug.Log("❌ Không thể spawn! Vị trí spawnPoint không nằm trên ô 'tile_placement' hoặc ô này đã có tháp.");
+            }
         }
         else
         {
-            Debug.Log("Không đủ tiền!");
+            // 2. Dự phòng: Nếu chưa có PlacementManager trên Scene thì đẻ thẳng và ép kích hoạt tháp
+            GameObject newTower = Instantiate(prefab, spawnPoint.position, Quaternion.identity);
+            TowerController controller = newTower.GetComponent<TowerController>();
+            if (controller != null)
+            {
+                controller.SetOperational(true);
+            }
         }
-        */
-
-        // Tạm thời cứ bấm nút là đẻ tháp free để test cho lẹ
-        Instantiate(prefab, spawnPoint.position, Quaternion.identity);
     }
 }

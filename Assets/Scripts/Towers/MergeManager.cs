@@ -32,8 +32,8 @@ public class MergeManager : MonoBehaviour
         Instance = this;
         
         AddRecipe("Lua", "Nuoc", "BomNhiet"); 
-        AddRecipe("Lua", "Dat", "DungNham");  
-        AddRecipe("Dat", "Nuoc", "DamLay");   
+        AddRecipe("Lua", "Dat", "DungNham");   
+        AddRecipe("Dat", "Nuoc", "DamLay");    
     }
 
     void AddRecipe(string element1, string element2, string resultElement)
@@ -44,7 +44,6 @@ public class MergeManager : MonoBehaviour
 
     public bool TryMerge(TowerDrag towerA, TowerDrag towerB)
     {
-        // Bỏ điều kiện chặn level 3 ở đây đi, chỉ cần check xem có cùng level không thôi
         if (towerA.towerLevel != towerB.towerLevel)
             return false; 
 
@@ -55,7 +54,6 @@ public class MergeManager : MonoBehaviour
         // 1. NÂNG CẤP LEVEL (Ghép 2 tháp giống hệt nhau)
         if (elemA == elemB)
         {
-            // Chốt chặn Max Level đặt ở đây: Tháp giống nhau thì Cấp 3 là kịch kim
             if (towerA.towerLevel >= 3)
             {
                 Debug.Log("Tháp đã Max Level 3, không thể nâng cấp thêm!");
@@ -72,7 +70,6 @@ public class MergeManager : MonoBehaviour
         string recipeKey = elemA + "_" + elemB;
         if (mergeRecipes.ContainsKey(recipeKey))
         {
-            // Lai tạo thì cấp nào cũng chơi, truyền đúng level nguyên liệu sang tháp lai
             string heLai = mergeRecipes[recipeKey];
             ExecuteMerge(towerA, towerB);
             SpawnHybridTower(heLai, towerA.towerLevel, spawnPos);
@@ -83,12 +80,22 @@ public class MergeManager : MonoBehaviour
     }
 
     void ExecuteMerge(TowerDrag a, TowerDrag b)
+{
+    // GIẢI PHÓNG ĐÚNG Ô TILE BAN ĐẦU CỦA 2 THÁP CỦ
+    if (TowerPlacementManager.Instance != null)
     {
-        Destroy(a.gameObject);
-        Destroy(b.gameObject);
+        // Giải phóng vị trí gốc của tháp A (Ví dụ: ô spawnPoint vừa bị kéo đi)
+        TowerPlacementManager.Instance.ClearTile(a.originalPosition);
+        
+        // Giải phóng vị trí của tháp B (Tháp đứng yên nhận gộp)
+        TowerPlacementManager.Instance.ClearTile(b.originalPosition);
     }
 
-    // Xử lý việc đẻ tháp khi người chơi ghép 2 tháp cùng loại (Lửa1+Lửa1, hoặc BomNhiet1+BomNhiet1)
+    Destroy(a.gameObject);
+    Destroy(b.gameObject);
+}
+
+    // Xử lý đẻ tháp nâng cấp
     void SpawnUpgradedTower(string element, int level, Vector3 pos)
     {
         GameObject prefabToSpawn = null;
@@ -112,14 +119,10 @@ public class MergeManager : MonoBehaviour
             else if (element == "DamLay") prefabToSpawn = damLayLv3;
         }
 
-        if (prefabToSpawn != null)
-        {
-            Instantiate(prefabToSpawn, pos, Quaternion.identity);
-            Debug.Log($"Đã nâng cấp {element} lên Cấp {level}");
-        }
+        SpawnTowerWithPlacementManager(prefabToSpawn, pos, $"Nâng cấp {element} Cấp {level}");
     }
 
-    // Xử lý việc đẻ tháp lai khi người chơi ghép 2 tháp cơ bản (Lửa2+Nước2 = BomNhiet2)
+    // Xử lý đẻ tháp lai
     void SpawnHybridTower(string resultElement, int level, Vector3 pos)
     {
         GameObject prefabToSpawn = null;
@@ -143,10 +146,28 @@ public class MergeManager : MonoBehaviour
             else if (resultElement == "DamLay") prefabToSpawn = damLayLv3;
         }
 
-        if (prefabToSpawn != null)
+        SpawnTowerWithPlacementManager(prefabToSpawn, pos, $"Lai tạo {resultElement} Cấp {level}");
+    }
+
+    // HÀM BỔ SUNG: Sinh tháp mới qua PlacementManager để tự động bật Hoạt Động (Operational = true)
+    void SpawnTowerWithPlacementManager(GameObject prefab, Vector3 pos, string debugText)
+    {
+        if (prefab == null) return;
+
+        if (TowerPlacementManager.Instance != null)
         {
-            Instantiate(prefabToSpawn, pos, Quaternion.identity);
-            Debug.Log($"Đã lai tạo ra {resultElement} Cấp {level}");
+            TowerPlacementManager.Instance.SpawnMergedTower(prefab, pos);
         }
+        else
+        {
+            GameObject newTower = Instantiate(prefab, pos, Quaternion.identity);
+            TowerController controller = newTower.GetComponent<TowerController>();
+            if (controller != null)
+            {
+                controller.SetOperational(true);
+            }
+        }
+
+        Debug.Log($"✅ Đã {debugText} thành công!");
     }
 }
