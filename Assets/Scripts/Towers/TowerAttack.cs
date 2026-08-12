@@ -3,17 +3,27 @@ using UnityEngine;
 public class TowerAttack : MonoBehaviour
 {
     [Header("Chỉ số tấn công")]
-    public float range = 3f;      // Tầm bắn
-    public float fireRate = 1f;   // Tốc độ bắn (1 viên/giây)
+    public float range = 3f;
+    public float fireRate = 1f;
     private float fireCountdown = 0f;
 
-    public GameObject bulletPrefab; // Nhét Prefab viên đạn vào đây
+    public GameObject bulletPrefab;
+
+    private TowerController towerController;
+
+    void Start()
+    {
+        // Tự động tìm component TowerController trên cùng Tháp
+        towerController = GetComponent<TowerController>();
+    }
 
     void Update()
     {
+        // BẮT BUỘC: Nếu tháp chưa được đặt hợp lệ -> Bỏ qua không cho bắn
+        if (towerController != null && !towerController.isOperational) return;
+
         fireCountdown -= Time.deltaTime;
-        
-        // Đã hồi đạn xong -> Bắn quái gần nhất
+
         if (fireCountdown <= 0f)
         {
             ShootNearestEnemy();
@@ -22,34 +32,42 @@ public class TowerAttack : MonoBehaviour
 
     void ShootNearestEnemy()
     {
-        // Tìm TẤT CẢ những thằng đang mang Tag "Enemy" trên bản đồ
-        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        // Tối ưu: Chỉ quét các Collider nằm trong tầm bắn
+        Collider2D[] enemiesInRange = Physics2D.OverlapCircleAll(transform.position, range);
         float shortestDistance = Mathf.Infinity;
         GameObject nearestEnemy = null;
 
-        // So sánh xem thằng nào gần nhất
-        foreach (GameObject enemy in enemies)
+        foreach (Collider2D col in enemiesInRange)
         {
-            float distanceToEnemy = Vector3.Distance(transform.position, enemy.transform.position);
-            // Nếu nằm trong tầm bắn và là thằng gần nhất nãy giờ tìm thấy
-            if (distanceToEnemy < shortestDistance && distanceToEnemy <= range)
+            if (col.CompareTag("Enemy"))
             {
-                shortestDistance = distanceToEnemy;
-                nearestEnemy = enemy;
+                float distanceToEnemy = Vector3.Distance(transform.position, col.transform.position);
+                if (distanceToEnemy < shortestDistance)
+                {
+                    shortestDistance = distanceToEnemy;
+                    nearestEnemy = col.gameObject;
+                }
             }
         }
 
-        // Lấy con gần nhất ra chém... à nhầm, bắn
         if (nearestEnemy != null)
         {
-            // Sinh ra viên đạn tại vị trí của tháp
             GameObject bulletGO = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
-            
-            // Truyền tọa độ con quái cho viên đạn đuổi theo
-            bulletGO.GetComponent<Bullet>().Seek(nearestEnemy.transform,gameObject);
-            
-            // Reset thời gian chờ
+            Bullet bulletScript = bulletGO.GetComponent<Bullet>();
+
+            if (bulletScript != null)
+            {
+                bulletScript.Seek(nearestEnemy.transform, gameObject);
+            }
+
             fireCountdown = 1f / fireRate;
         }
+    }
+
+    // Hiển thị vòng tròn tầm bắn của tháp trong tab Scene để dễ căn chỉnh
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, range);
     }
 }

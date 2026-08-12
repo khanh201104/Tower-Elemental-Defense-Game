@@ -1,23 +1,33 @@
 using UnityEngine;
-using UnityEngine.Tilemaps; // Bắt buộc phải thêm dòng này để Unity hiểu Tilemap là gì
+using UnityEngine.Tilemaps;
 
 public class TowerDrag : MonoBehaviour
 {
-    private Vector3 originalPosition;
+    public Vector3 originalPosition; // Để public để MergeManager đọc vị trí gốc
     private bool isDragging = false;
     
     public string elementType = "Lua"; 
     public int towerLevel = 1;
 
-    // Khai báo Tilemap để nhận diện ô Đặt Tháp
     public Tilemap placementTilemap;
+    private TowerController towerController;
 
-    // Các hàm phải nằm ngoài cùng thế này, không bị lọt vào hàm nào khác
+    void Start()
+    {
+        towerController = GetComponent<TowerController>();
+    }
+
     void OnMouseDown()
     {
-        Debug.Log("Đã click chuột vào tháp!");
-        originalPosition = transform.position;
+        Debug.Log("Đã nhấc tháp lên!");
+        originalPosition = transform.position; // Lưu lại vị trí ô gốc
         isDragging = true;
+
+        // BỔ SUNG: Tạm thời TẮT HOẠT ĐỘNG khi đang cầm/kéo tháp
+        if (towerController != null)
+        {
+            towerController.SetOperational(false); // Tháp mờ đi 50%, ngưng bắn, quái không đánh được
+        }
     }
 
     void OnMouseDrag()
@@ -28,33 +38,37 @@ public class TowerDrag : MonoBehaviour
     }
 
     void OnMouseUp()
-{
-    isDragging = false;
-    
-    // Tự động tìm cái Tilemap có tên chính xác là "Tilemap" trong Scene
-    if (placementTilemap == null)
     {
-        GameObject tilemapObj = GameObject.Find("Tilemap"); 
-        if (tilemapObj != null)
+        isDragging = false;
+        
+        // Tự động tìm Tilemap nếu chưa gán
+        if (placementTilemap == null)
         {
-            placementTilemap = tilemapObj.GetComponent<Tilemap>();
+            if (TowerPlacementManager.Instance != null && TowerPlacementManager.Instance.mainTilemap != null)
+            {
+                placementTilemap = TowerPlacementManager.Instance.mainTilemap;
+            }
+            else
+            {
+                GameObject tilemapObj = GameObject.Find("Tilemap"); 
+                if (tilemapObj != null)
+                {
+                    placementTilemap = tilemapObj.GetComponent<Tilemap>();
+                }
+            }
         }
-    }
 
-    // Nếu vẫn không tìm thấy thì báo lỗi để kiểm tra lại tên
-    if (placementTilemap == null)
-    {
-        Debug.LogError("Không tìm thấy Tilemap nào tên là 'Tilemap' trong Scene!");
-        transform.position = originalPosition;
-        return;
-    }
+        if (placementTilemap == null)
+        {
+            Debug.LogError("Không tìm thấy Tilemap nào trong Scene!");
+            ResetToOriginalPosition();
+            return;
+        }
 
-    // --- Các đoạn code bên dưới giữ nguyên y cũ của m ---
-    Vector3Int cellPos = placementTilemap.WorldToCell(transform.position);
-    
-    if (placementTilemap.HasTile(cellPos))
-    {
+        Vector3Int cellPos = placementTilemap.WorldToCell(transform.position);
         Vector3 snapPos = placementTilemap.GetCellCenterWorld(cellPos);
+
+        // 1. KIỂM TRA XEM CÓ MUỐN THẢ LÊN ĐẦU CON THÁP KHÁC ĐỂ GỘP KHÔNG
         Collider2D[] colliders = Physics2D.OverlapPointAll(snapPos);
         TowerDrag targetTower = null;
 
@@ -68,22 +82,59 @@ public class TowerDrag : MonoBehaviour
             }
         }
 
+        // Trường hợp A: Thả đè lên tháp khác -> Thử Gộp Tháp
         if (targetTower != null)
         {
             bool canMerge = MergeManager.Instance.TryMerge(this, targetTower);
             if (!canMerge) 
             {
-                transform.position = originalPosition;
+                // Không gộp được -> Trả về vị trí cũ và BẬT LẠI HOẠT ĐỘNG
+                ResetToOriginalPosition();
             }
         }
+        // Trường hợp B: Thả vào ô trống -> Gọi TowerPlacementManager để Di Chuyển Tháp
         else
         {
-            transform.position = snapPos;
+            if (TowerPlacementManager.Instance != null)
+            {
+                bool moveSuccess = TowerPlacementManager.Instance.TryMoveTower(gameObject, originalPosition, transform.position);
+                
+                if (moveSuccess)
+                {
+                    // Di chuyển thành công sang ô mới -> BẬT HOẠT ĐỘNG THÁP
+                    if (towerController != null)
+                    {
+                        towerController.SetOperational(true);
+                    }
+                }
+                else
+                {
+                    // Ô mới không hợp lệ -> Trả về vị trí cũ và BẬT LẠI HOẠT ĐỘNG
+                    ResetToOriginalPosition();
+                }
+            }
+            else
+            {
+                if (placementTilemap.HasTile(cellPos))
+                {
+                    transform.position = snapPos;
+                    if (towerController != null) towerController.SetOperational(true);
+                }
+                else
+                {
+                    ResetToOriginalPosition();
+                }
+            }
         }
     }
-    else
+
+    // Hàm trả tháp về vị trí cũ và bật lại trạng thái hoạt động
+    void ResetToOriginalPosition()
     {
         transform.position = originalPosition;
+        if (towerController != null)
+        {
+            towerController.SetOperational(true);
+        }
     }
-}
 }

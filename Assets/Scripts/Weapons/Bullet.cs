@@ -1,61 +1,68 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
     private Transform target;
-    private GameObject shooterTower; // Lưu lại tháp nào đã bắn viên đạn này để truyền máu về
+    private Vector3 lastTargetPosition; // Lưu vị trí cuối cùng phòng trường hợp quái chết giữa đường
+    private GameObject shooterTower;
 
     public float speed = 15f;
     public int damage = 1;
-    
+
     [Header("Hiệu ứng nổ (AOE)")]
-    public float aoeRadius = 0f; // Để bằng 0 thì nó là đạn đơn mục tiêu
-    public GameObject explosionVFX; // Kéo Prefab vụ nổ vào đây
+    public float aoeRadius = 0f;
+    public GameObject explosionVFX;
 
     [Header("Chí mạng (Crit)")]
     public bool isCritBullet = false;
-    [Range(0f, 1f)] public float critChance = 0.2f; 
-    public int critMultiplier = 2; 
+    [Range(0f, 1f)] public float critChance = 0.2f;
+    public int critMultiplier = 2;
 
     [Header("Hiệu ứng Làm chậm (CC)")]
-    public bool isSlowBullet = false; 
-    [Range(0f, 1f)] public float slowPercentage = 0.5f; 
-    public float slowDuration = 2f; 
+    public bool isSlowBullet = false;
+    [Range(0f, 1f)] public float slowPercentage = 0.5f;
+    public float slowDuration = 2f;
 
     [Header("Hiệu ứng Đốt máu (Burn)")]
-    public bool isBurnBullet = false;      
-    public int burnDamagePerTick = 1;      
-    public float burnDuration = 3f;        
-    public float burnTickRate = 1f;        
+    public bool isBurnBullet = false;
+    public int burnDamagePerTick = 1;
+    public float burnDuration = 3f;
+    public float burnTickRate = 1f;
 
-    [Header("Hiệu ứng Hút máu (Tháp Đất/Tank)")]
-    public bool isLifestealBullet = false; 
-    [Range(0f, 1f)] public float lifestealPercent = 0.5f; // Hút 50% lượng sát thương gây ra thành máu
+    [Header("Hiệu ứng Hút máu")]
+    public bool isLifestealBullet = false;
+    [Range(0f, 1f)] public float lifestealPercent = 0.5f;
 
-    
-    // Nâng cấp hàm Seek để tháp khi bắn có thể nhồi thông tin của nó vào viên đạn
     public void Seek(Transform _target, GameObject _shooter)
     {
         target = _target;
-        shooterTower = _shooter; 
+        shooterTower = _shooter;
+        if (target != null) lastTargetPosition = target.position;
     }
 
     void Update()
     {
-        if (target == null)
+        // Nếu quái còn sống thì cập nhật vị trí mới nhất
+        if (target != null)
         {
-            Destroy(gameObject);
-            return;
+            lastTargetPosition = target.position;
         }
 
-        // Bổ sung: Xoay đầu viên đạn hướng về phía mục tiêu
-        Vector3 dir = target.position - transform.position;
-        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-        transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+        Vector3 targetPos = (target != null) ? target.position : lastTargetPosition;
 
-        transform.position = Vector3.MoveTowards(transform.position, target.position, speed * Time.deltaTime);
+        // Xoay đầu viên đạn hướng về mục tiêu
+        Vector3 dir = targetPos - transform.position;
+        if (dir != Vector3.zero)
+        {
+            float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+            transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+        }
 
-        if (Vector3.Distance(transform.position, target.position) < 0.2f)
+        transform.position = Vector3.MoveTowards(transform.position, targetPos, speed * Time.deltaTime);
+
+        // Chạm đích
+        if (Vector3.Distance(transform.position, targetPos) < 0.2f)
         {
             HitTarget();
         }
@@ -63,80 +70,88 @@ public class Bullet : MonoBehaviour
 
     void HitTarget()
     {
-        // 1. SINH RA HÌNH ẢNH VỤ NỔ (VFX)
+        // 1. SINH VFX VỤ NỔ
         if (explosionVFX != null)
+{
+    GameObject effectIns = Instantiate(explosionVFX, transform.position, transform.rotation);
+    
+    // Nếu là đạn nổ AOE -> Tự phóng to hình ảnh nổ theo bán kính aoeRadius
+    if (aoeRadius > 0f)
+    {
+        // Nhân với 2 vì aoeRadius là BÁN KÍNH, còn Scale đại diện cho ĐƯỜNG KÍNH
+        effectIns.transform.localScale = Vector3.one * (aoeRadius * 2f); 
+    }
+
+    Destroy(effectIns, 2f); 
+}
+
+        // 2. TÍNH CRIT 1 LẦN DUY NHẤT CHO VIÊN ĐẠN NÀY
+        int calculatedDamage = damage;
+        if (isCritBullet && Random.value <= critChance)
         {
-            // Đẻ cái hình ảnh nổ ra tại đúng vị trí viên đạn vừa chạm đích
-            GameObject effectIns = Instantiate(explosionVFX, transform.position, transform.rotation);
-            
-            // Xóa hình ảnh vụ nổ sau 2 giây để không bị rác bộ nhớ game
-            Destroy(effectIns, 2f); 
+            calculatedDamage *= critMultiplier;
+            Debug.Log($"[CRIT HIT] Dội {calculatedDamage} sát thương!");
         }
 
-        // 2. GÂY SÁT THƯƠNG
+        // 3. GÂY SÁT THƯƠNG (AOE HOẶC ĐƠN MỤC TIÊU)
         if (aoeRadius > 0f)
         {
             Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, aoeRadius);
+            
+            // Dùng HashSet để tránh 1 quái có nhiều Collider bị dính sát thương nhiều lần
+            HashSet<EnemyHealth> processedEnemies = new HashSet<EnemyHealth>();
+
             foreach (Collider2D col in colliders)
             {
                 if (col.CompareTag("Enemy"))
                 {
-                    ApplyEffects(col.gameObject); 
+                    EnemyHealth eHealth = col.GetComponent<EnemyHealth>();
+                    if (eHealth != null && !processedEnemies.Contains(eHealth))
+                    {
+                        processedEnemies.Add(eHealth);
+                        ApplyEffectsToEnemy(eHealth, col.gameObject, calculatedDamage);
+                    }
                 }
             }
         }
-        else
+        else if (target != null)
         {
-            ApplyEffects(target.gameObject);
+            EnemyHealth eHealth = target.GetComponent<EnemyHealth>();
+            if (eHealth != null)
+            {
+                ApplyEffectsToEnemy(eHealth, target.gameObject, calculatedDamage);
+            }
         }
 
-        // 3. XÓA VIÊN ĐẠN
+        // 4. XÓA VIÊN ĐẠN
         Destroy(gameObject);
     }
 
-    void ApplyEffects(GameObject enemyGo)
+    void ApplyEffectsToEnemy(EnemyHealth eHealth, GameObject enemyGo, int finalDamage)
     {
-        // Lấy component ra trước và kiểm tra an toàn (tránh lỗi Null Reference)
-        EnemyHealth eHealth = enemyGo.GetComponent<EnemyHealth>();
         EnemyMovement eMove = enemyGo.GetComponent<EnemyMovement>();
 
-        if (eHealth == null) return; 
-
-        // 1. TÍNH TOÁN SÁT THƯƠNG CHÍ MẠNG
-        int finalDamage = damage;
-        if (isCritBullet)
-        {
-            if (Random.value <= critChance)
-            {
-                finalDamage *= critMultiplier;
-                Debug.Log("CHÍ MẠNG! Đấm phát chết luôn: " + finalDamage + " dame"); 
-            }
-        }
-
-        // 2. Trừ máu gốc của quái
+        // 1. Trừ máu quái
         eHealth.TakeDamage(finalDamage);
 
-        // 3. HÚT MÁU (Gửi máu về cho tháp)
+        // 2. Hút máu cho tháp
         if (isLifestealBullet && shooterTower != null)
         {
-            // Tính số máu hút được
-            float healAmount = Mathf.Max(1f, finalDamage * lifestealPercent); 
-            
-            // Tìm tháp gốc và bơm máu cho nó
+            float healAmount = Mathf.Max(1f, finalDamage * lifestealPercent);
             TowerHealth tHealth = shooterTower.GetComponent<TowerHealth>();
             if (tHealth != null)
             {
-                tHealth.Heal(healAmount); 
+                tHealth.Heal(healAmount);
             }
         }
 
-        // 4. Trát bùn làm chậm 
+        // 3. Làm chậm
         if (isSlowBullet && eMove != null)
         {
             eMove.ApplySlow(slowPercentage, slowDuration);
         }
 
-        // 5. Châm lửa đốt máu
+        // 4. Đốt máu
         if (isBurnBullet)
         {
             eHealth.ApplyBurn(burnDamagePerTick, burnDuration, burnTickRate);

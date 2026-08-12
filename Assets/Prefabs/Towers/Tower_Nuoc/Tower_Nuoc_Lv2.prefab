@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 7638850580292242908}
   - component: {fileID: 7763644495313502389}
   - component: {fileID: -2844011049732320945}
+  - component: {fileID: 3800967212294057559}
   m_Layer: 0
   m_Name: Tower_Nuoc_Lv2
   m_TagString: Tower
@@ -82,7 +83,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -594044515
-  m_SortingLayer: 3
+  m_SortingLayer: 4
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 40a404bad6378604d8f255da8727b9df, type: 3}
@@ -184,3 +185,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TowerHealth
   maxHealth: 20
+  enableRegen: 0
+  regenAmount: 2
+  regenInterval: 1
+  hpBarOffset: {x: 0, y: 0.65, z: 0}
+  hideWhenFull: 1
+  healthBar: {fileID: 0}
+--- !u!114 &3800967212294057559
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5620580406772248784}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a294cd6915fa8754fbc2e46d1377ced8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TowerController
+  isOperational: 0

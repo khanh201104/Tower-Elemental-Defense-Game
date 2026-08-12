@@ -5,15 +5,77 @@ public class TowerHealth : MonoBehaviour
     public float maxHealth = 50f;
     private float currentHealth;
 
+    [Header("Khả năng Tự Hồi Máu (Regen)")]
+    public bool enableRegen = false;       // Tích chọn nếu tháp này có khả năng tự hồi máu
+    public float regenAmount = 2f;         // Số máu được hồi mỗi đợt
+    public float regenInterval = 1f;       // Cứ mỗi bao nhiêu giây thì hồi 1 lần
+    private float regenTimer = 0f;
+
+    [Header("UI Máu Tự Động")]
+    public Vector3 hpBarOffset = new Vector3(0, 0.65f, 0); // Đã để chuẩn 0.65
+    public bool hideWhenFull = true;
+    
+    [HideInInspector]
+    public HealthBar healthBar;
+
+    private static GameObject cachedHpBarPrefab;
+
     void Start()
     {
         currentHealth = maxHealth;
+
+        if (cachedHpBarPrefab == null)
+        {
+            cachedHpBarPrefab = Resources.Load<GameObject>("HealthBarCanvas");
+        }
+
+        if (cachedHpBarPrefab != null)
+        {
+            GameObject hpBarInstance = Instantiate(cachedHpBarPrefab, transform);
+            hpBarInstance.transform.localPosition = hpBarOffset;
+            hpBarInstance.transform.localScale = new Vector3(0.01f, 0.01f, 0.01f);
+
+            healthBar = hpBarInstance.GetComponentInChildren<HealthBar>();
+        }
+
+        if (healthBar != null)
+        {
+            healthBar.UpdateHealth(currentHealth, maxHealth);
+            if (hideWhenFull) healthBar.gameObject.SetActive(false);
+        }
     }
 
-    // Hàm nhận sát thương từ quái
+    void Update()
+    {
+        HandleRegeneration();
+    }
+
+    // Hàm đếm ngược và xử lý hồi máu thụ động
+    void HandleRegeneration()
+    {
+        if (enableRegen && currentHealth < maxHealth)
+        {
+            regenTimer += Time.deltaTime;
+
+            if (regenTimer >= regenInterval)
+            {
+                Heal(regenAmount);
+                regenTimer = 0f; // Reset bộ đếm thời gian
+            }
+        }
+    }
+
     public void TakeDamage(float amount)
     {
         currentHealth -= amount;
+        currentHealth = Mathf.Max(0f, currentHealth);
+
+        if (healthBar != null)
+        {
+            healthBar.gameObject.SetActive(true);
+            healthBar.UpdateHealth(currentHealth, maxHealth);
+        }
+
         Debug.Log(gameObject.name + " bị vã! Máu còn: " + currentHealth);
 
         if (currentHealth <= 0)
@@ -22,23 +84,29 @@ public class TowerHealth : MonoBehaviour
         }
     }
 
-    // Hàm nhận máu từ đạn Tháp Đất mang về
     public void Heal(float amount)
     {
         currentHealth += amount;
-        if (currentHealth > maxHealth) 
+        if (currentHealth >= maxHealth) 
         {
-            currentHealth = maxHealth; // Chặn không cho hồi lố máu tối đa
+            currentHealth = maxHealth;
+            if (healthBar != null && hideWhenFull) 
+            {
+                healthBar.gameObject.SetActive(false); // Đầy máu -> Tự ẩn thanh máu
+            }
         }
-        Debug.Log("💚 " + gameObject.name + " HÚT MÁU! Máu hiện tại: " + currentHealth);
+
+        if (healthBar != null)
+        {
+            healthBar.UpdateHealth(currentHealth, maxHealth);
+        }
+
+        Debug.Log("💚 " + gameObject.name + " được HỒI MÁU! Máu hiện tại: " + currentHealth);
     }
 
     void Die()
     {
         Debug.Log("💥 " + gameObject.name + " đã sập!");
-        
-        // TODO: Chỗ này m sẽ cần clear ô gạch để người chơi được xây tháp khác vào (làm sau)
-        
         Destroy(gameObject);
     }
 }
