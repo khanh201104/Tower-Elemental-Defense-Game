@@ -104,9 +104,21 @@ public class TowerHealth : MonoBehaviour
         Debug.Log("💚 " + gameObject.name + " được HỒI MÁU! Máu hiện tại: " + currentHealth);
     }
 
-    void Die()
+    public void HealToFull()
     {
-        Debug.Log("💥 " + gameObject.name + " đã sập!");
-        Destroy(gameObject);
+        Heal(maxHealth); // Tận dụng lại hàm Heal() sẵn có để cập nhật UI & tự ẩn HealthBar
     }
+
+    void Die()
+{
+    Debug.Log("💥 " + gameObject.name + " đã sập!");
+
+    // Giải phóng ô Tilemap tại vị trí tháp đứng
+    if (TowerPlacementManager.Instance != null)
+    {
+        TowerPlacementManager.Instance.ClearTile(transform.position);
+    }
+
+    Destroy(gameObject);
+}
 }

@@ -200,9 +200,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c595ae95178a21c43bb4c638d5b8939f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMovement
-  baseSpeed: 5
+  baseSpeed: 6
   attackRange: 1
-  damage: 5
+  damage: 3
   attackCooldown: 1
   bulletPrefab: {fileID: 0}
   firePoint: {fileID: 0}

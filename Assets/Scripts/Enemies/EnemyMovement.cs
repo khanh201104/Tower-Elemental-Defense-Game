@@ -13,7 +13,7 @@ public class EnemyMovement : MonoBehaviour
     [Header("Chỉ số chiến đấu")]
     public float attackRange = 1f;
     public float damage = 10f;
-    public float attackCooldown = 1f; // Tốc độ vã (vd: 1s vã 1 lần)
+    public float attackCooldown = 1f; 
     private float attackTimer = 0f;
 
     [Header("Tấn công xa (Để trống nếu là quái Cận chiến)")]
@@ -45,7 +45,6 @@ public class EnemyMovement : MonoBehaviour
 
     void Update()
     {
-        // 1. Đếm ngược hiệu ứng làm chậm
         if (slowTimer > 0)
         {
             slowTimer -= Time.deltaTime;
@@ -56,7 +55,6 @@ public class EnemyMovement : MonoBehaviour
             }
         }
 
-        // 2. Đếm ngược thời gian hồi đòn đánh
         if (attackTimer > 0)
         {
             attackTimer -= Time.deltaTime;
@@ -64,7 +62,6 @@ public class EnemyMovement : MonoBehaviour
 
         FindTarget();
 
-        // ƯU TIÊN 1: Đang có Tháp ngáng đường -> Đánh Tháp
         if (currentTargetTower != null)
         {
             if (attackTimer <= 0)
@@ -73,12 +70,10 @@ public class EnemyMovement : MonoBehaviour
                 attackTimer = attackCooldown;
             }
         }
-        // ƯU TIÊN 2: Chưa đến Nhà chính -> Tiếp tục di chuyển theo đường
         else if (waypoints != null && targetIndex < waypoints.Length)
         {
             MoveAlongPath();
         }
-        // ƯU TIÊN 3: Đã chạy đến điểm cuối (Nhà chính) -> Dừng lại và liên tục tấn công Nhà chính
         else
         {
             if (attackTimer <= 0)
@@ -99,6 +94,13 @@ public class EnemyMovement : MonoBehaviour
         {
             if (hit.CompareTag("Tower"))
             {
+                // [MỚI FIX] CHỈ ĐÁNH THÁP ĐANG ACTIVE TRÊN SÂN
+                TowerController towerCtrl = hit.GetComponent<TowerController>();
+                if (towerCtrl != null && !towerCtrl.isOperational)
+                {
+                    continue; // Bỏ qua tháp nằm ở hàng chờ (Inactive)
+                }
+
                 float distanceToTower = Vector2.Distance(transform.position, hit.transform.position);
                 if (distanceToTower < shortestDistance)
                 {
@@ -111,7 +113,6 @@ public class EnemyMovement : MonoBehaviour
         currentTargetTower = nearestTower;
     }
 
-    // Đánh Tháp
     void AttackTower()
     {
         if (currentTargetTower == null) return;
@@ -137,7 +138,6 @@ public class EnemyMovement : MonoBehaviour
         }
     }
 
-    // Đánh Nhà Chính
     void AttackBase()
     {
         if (BaseHealth.Instance == null) return;

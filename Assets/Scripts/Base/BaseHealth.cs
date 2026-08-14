@@ -95,13 +95,16 @@ public class BaseHealth : MonoBehaviour
     {
         Debug.Log("💀 GAME OVER! Nhà chính đã nổ!");
 
-        // 1. Bật Bảng GameOver UI
-        if (gameOverPanel != null)
+        // Chuyển quyền xử lý Game Over cho GameManager
+        if (GameManager.Instance != null)
         {
-            gameOverPanel.SetActive(true);
+            GameManager.Instance.SetState(GameState.GameOver);
         }
-
-        // 2. Tạm dừng thời gian trong game (Tháp ngừng bắn, quái ngừng đi)
-        Time.timeScale = 0f; 
+        else
+        {
+            // Dự phòng nếu chưa có GameManager
+            if (gameOverPanel != null) gameOverPanel.SetActive(true);
+            Time.timeScale = 0f; 
+        }
     }
 }
