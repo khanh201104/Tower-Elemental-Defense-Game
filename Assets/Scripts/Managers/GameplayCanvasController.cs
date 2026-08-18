@@ -4,12 +4,18 @@ using UnityEngine.SceneManagement;
 
 public class GameplayCanvasController : MonoBehaviour
 {
-    public static GameplayCanvasController Instance; // Cho phép các Manager khác gọi cập nhật UI dễ dàng
+    public static GameplayCanvasController Instance;
 
     [Header("--- UI Header ---")]
-    public GameObject headerPanel;      // Kéo Panel_Header vào đây
-    public Text levelTitleText;         // Kéo Text_LevelTitle vào đây
-    public Text goldText;               // Kéo Txt_Gold vào đây
+    public GameObject headerPanel;
+    public Text levelTitleText;
+    public Text goldText;
+    public Slider baseHealthSlider;      // Kéo Slider_BaseHealth vào đây
+    public Image baseHealthFillImage;
+    public Gradient healthGradient;
+    public Text baseHealthText;          // Kéo Text hiển thị số máu vào đây (tùy chọn)
+    public Button pauseButton;   
+        // Kéo Button_Pause trong Header vào đây
 
     [Header("--- Toàn Bộ Panel Trong Canvas ---")]
     public GameObject footerPanel;
@@ -18,8 +24,7 @@ public class GameplayCanvasController : MonoBehaviour
     public GameObject gameOverPanel;
     public GameObject victoryPanel;
 
-    [Header("--- Nút Header / Màn Hình Chính ---")]
-    public Button pauseButton;
+    [Header("--- Nút Khác Ngoài Màn Hình ---")]
     public Button nextWaveButton;
     public Button shopButton;
 
@@ -45,22 +50,18 @@ public class GameplayCanvasController : MonoBehaviour
 
     void Start()
     {
-        // 1. TỰ ĐỘNG CẬP NHẬT TÊN MÀN CHƠI
         UpdateLevelHeader();
 
-        // 2. KHỞI TẠO TIỀN BAN ĐẦU
         if (GameEconomy.Instance != null)
         {
             UpdateGoldDisplay(GameEconomy.Instance.gold);
         }
 
-        // 3. ĐĂNG KÝ CÁC PANEL VỚI GAMEMANAGER
         if (GameManager.Instance != null)
         {
             GameManager.Instance.RegisterUIPanels(footerPanel, pauseMenuPanel, settingsPanel, gameOverPanel, victoryPanel);
         }
 
-        // 4. GẮN TOÀN BỘ SỰ KIỆN NÚT BẤM (AddListener)
         SetupButtonListeners();
     }
 
@@ -75,16 +76,47 @@ public class GameplayCanvasController : MonoBehaviour
         }
     }
 
-    // Hàm cập nhật hiển thị tiền vàng
     public void UpdateGoldDisplay(int gold)
     {
         if (goldText != null)
         {
-            goldText.text = $"Vàng: {gold}"; // hoặc $"{gold} G"
+            goldText.text = "Vàng: " + gold;
         }
     }
 
-    // --- GẮN SỰ KIỆN CHO BUTTON ---
+    // Hàm cập nhật thanh máu và chữ số máu nhà chính
+    public void UpdateBaseHealthDisplay(float currentHealth, float maxHealth)
+    {
+        if (baseHealthSlider != null)
+        {
+            baseHealthSlider.maxValue = maxHealth;
+            baseHealthSlider.value = currentHealth;
+        }
+
+        // Đổi màu thanh Fill theo tỉ lệ % máu (0.0 -> 1.0)
+        if (baseHealthFillImage != null && maxHealth > 0)
+        {
+            float healthPercent = currentHealth / maxHealth;
+            
+            // Cách 1: Dùng Gradient nếu đã thiết lập dải màu trong Inspector
+            if (healthGradient != null)
+            {
+                baseHealthFillImage.color = healthGradient.Evaluate(healthPercent);
+            }
+            // Cách 2: Tự động chuyển Đỏ -> Xanh nếu chưa tạo Gradient
+            else
+            {
+                baseHealthFillImage.color = Color.Lerp(Color.red, Color.green, healthPercent);
+            }
+        }
+
+        if (baseHealthText != null)
+        {
+            baseHealthText.text = $"{Mathf.CeilToInt(currentHealth)}/{Mathf.CeilToInt(maxHealth)}";
+        }
+    }
+
+    // --- GẮN SỰ KIỆN BUTTON ---
     private void SetupButtonListeners()
     {
         if (pauseButton != null)
