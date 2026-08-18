@@ -774,6 +774,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   currentState: 0
   footerPanel: {fileID: 1904807190}
+  pauseMenuPanel: {fileID: 1871927980}
+  settingsPanel: {fileID: 2049704772}
   gameOverPanel: {fileID: 1292342336}
   victoryPanel: {fileID: 59780876}
 --- !u!1 &817320028 stripped
@@ -3339,6 +3341,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1871927980 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3367514075917568260, guid: 6b32ab38f33c0f344943c13a71551391, type: 3}
+  m_PrefabInstance: {fileID: 936192636719026328}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1904807190 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4574732675177957504, guid: 6b32ab38f33c0f344943c13a71551391, type: 3}
@@ -3423,6 +3430,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1708182829}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2049704772 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9047346063303857503, guid: 6b32ab38f33c0f344943c13a71551391, type: 3}
+  m_PrefabInstance: {fileID: 936192636719026328}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &936192636719026328
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3447,6 +3459,10 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1798634218}
+    - target: {fileID: 3367514075917568260, guid: 6b32ab38f33c0f344943c13a71551391, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3895175669604780651, guid: 6b32ab38f33c0f344943c13a71551391, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -3597,7 +3613,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5700693664976421165, guid: 6b32ab38f33c0f344943c13a71551391, type: 3}
       propertyPath: m_Name
-      value: Canvas
+      value: Canvas_Gameplay
       objectReference: {fileID: 0}
     - target: {fileID: 8619171522853896749, guid: 6b32ab38f33c0f344943c13a71551391, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target

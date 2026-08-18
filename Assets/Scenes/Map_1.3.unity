@@ -774,6 +774,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   currentState: 0
   footerPanel: {fileID: 1904807190}
+  pauseMenuPanel: {fileID: 0}
+  settingsPanel: {fileID: 0}
   gameOverPanel: {fileID: 1292342336}
   victoryPanel: {fileID: 59780876}
 --- !u!1 &817320028 stripped
@@ -3415,6 +3417,10 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1798634218}
+    - target: {fileID: 3367514075917568260, guid: 6b32ab38f33c0f344943c13a71551391, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3895175669604780651, guid: 6b32ab38f33c0f344943c13a71551391, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -3565,7 +3571,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5700693664976421165, guid: 6b32ab38f33c0f344943c13a71551391, type: 3}
       propertyPath: m_Name
-      value: Canvas
+      value: Canvas_Gameplay
       objectReference: {fileID: 0}
     - target: {fileID: 8619171522853896749, guid: 6b32ab38f33c0f344943c13a71551391, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
