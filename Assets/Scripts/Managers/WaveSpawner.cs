@@ -24,7 +24,7 @@ public class WaveSpawner : MonoBehaviour
     public Wave[] waves;              
     public Transform spawnPoint;      
 
-    private int currentWaveIndex = 0; 
+    public int currentWaveIndex = 0; 
     private bool isSpawning = false;  
     
     // Biến đếm xem đang có bao nhiêu nhóm quái đang đẻ

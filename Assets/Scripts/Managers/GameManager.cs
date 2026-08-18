@@ -40,13 +40,26 @@ public class GameManager : MonoBehaviour
         switch (currentState)
         {
             case GameState.Pause:
-                Time.timeScale = 1f; // Mở lại dòng thời gian
+                Time.timeScale = 1f;
                 if (footerPanel != null) footerPanel.SetActive(true);
                 if (gameOverPanel != null) gameOverPanel.SetActive(false);
                 if (victoryPanel != null) victoryPanel.SetActive(false);
 
-                // Hồi 100% HP cho toàn bộ tháp
+                // 1. Hồi máu cho toàn bộ tháp
                 HealAllTowers();
+
+                // 2. Kiểm tra gọi Panel Thưởng
+                if (WaveSpawner.Instance != null && WaveSpawner.Instance.currentWaveIndex > 0)
+                {
+                    if (WaveRewardManager.Instance != null)
+                    {
+                        WaveRewardManager.Instance.ShowRewardPanel();
+                    }
+                    else
+                    {
+                        Debug.LogError("❌ LỖI: WaveRewardManager.Instance bị NULL! (Chưa tạo GameObject WaveRewardManager trong Scene)");
+                    }
+                }
                 break;
 
             case GameState.Resume:
@@ -106,4 +119,35 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 1f; // Mở lại thời gian trước khi reset scene
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
+    public void NextLevel()
+    {
+        Time.timeScale = 1f;
+        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+        int nextSceneIndex = currentSceneIndex + 1;
+
+        // Nếu còn Map tiếp theo trong danh sách Build
+        if (nextSceneIndex < SceneManager.sceneCountInBuildSettings)
+        {
+            SceneManager.LoadScene(nextSceneIndex);
+        }
+        else
+        {
+            Debug.Log("🏆 Bạn đã phá đảo toàn bộ các Map!");
+            SceneManager.LoadScene(0); // Quay về Map đầu
+        }
+    }
+    // Thêm hàm này vào GameManager.cs
+public void SaveLevelProgress()
+{
+    int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+    int highestUnlocked = PlayerPrefs.GetInt("HighestUnlockedLevel", 1);
+
+    // Nếu màn vừa thắng mở ra màn mới cao hơn
+    if (currentSceneIndex >= highestUnlocked)
+    {
+        PlayerPrefs.SetInt("HighestUnlockedLevel", currentSceneIndex + 1);
+        PlayerPrefs.Save();
+        Debug.Log($"💾 Đã mở khóa Màn tiếp theo: {currentSceneIndex + 1}");
+    }
+}
 }
