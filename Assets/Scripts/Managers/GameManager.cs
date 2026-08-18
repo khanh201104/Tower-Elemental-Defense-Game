@@ -50,23 +50,7 @@ public class GameManager : MonoBehaviour
                 if (pauseMenuPanel != null) pauseMenuPanel.SetActive(false);
                 if (settingsPanel != null) settingsPanel.SetActive(false);
                 if (gameOverPanel != null) gameOverPanel.SetActive(false);
-                if (victoryPanel != null) victoryPanel.SetActive(false);
-
-                // 1. Hồi máu cho toàn bộ tháp
-                HealAllTowers();
-
-                // 2. Kiểm tra gọi Panel Thưởng Wave
-                if (WaveSpawner.Instance != null && WaveSpawner.Instance.currentWaveIndex > 0)
-                {
-                    if (WaveRewardManager.Instance != null)
-                    {
-                        WaveRewardManager.Instance.ShowRewardPanel();
-                    }
-                    else
-                    {
-                        Debug.LogError("❌ LỖI: WaveRewardManager.Instance bị NULL! (Chưa tạo GameObject WaveRewardManager trong Scene)");
-                    }
-                }
+                if (victoryPanel != null) victoryPanel.SetActive(false);                
                 break;
 
             case GameState.Resume:
@@ -229,4 +213,18 @@ public class GameManager : MonoBehaviour
     
     SetState(GameState.Pause);
 }
+public void OnWaveCompleted()
+    {
+        // 1. Hồi máu toàn bộ tháp
+        HealAllTowers();
+
+        // 2. Mở bảng chọn phần thưởng
+        if (WaveRewardManager.Instance != null)
+        {
+            WaveRewardManager.Instance.ShowRewardPanel();
+        }
+
+        // 3. Đưa game về trạng thái Pause (Chuẩn bị)
+        SetState(GameState.Pause);
+    }
 }

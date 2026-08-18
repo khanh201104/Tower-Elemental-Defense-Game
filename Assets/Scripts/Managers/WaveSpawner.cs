@@ -178,7 +178,7 @@ public class WaveSpawner : MonoBehaviour
             Debug.Log($"✅ Đã dọn sạch Wave {currentWaveIndex}! Chuyển về trạng thái PAUSE.");
             if (GameManager.Instance != null)
             {
-                GameManager.Instance.SetState(GameState.Pause);
+                GameManager.Instance.OnWaveCompleted();
             }
         }
     }
