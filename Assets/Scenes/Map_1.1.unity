@@ -3433,17 +3433,6 @@ Transform:
   - {fileID: 1236154000}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2021796168 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8197259595602059611, guid: 6b32ab38f33c0f344943c13a71551391, type: 3}
-  m_PrefabInstance: {fileID: 936192636719026328}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 31681a55e1f829d4ab676e0fcdada587, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HealthBar
 --- !u!1 &2025835849
 GameObject:
   m_ObjectHideFlags: 0
@@ -3503,6 +3492,10 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 809320249}
+    - target: {fileID: 3272628628886300716, guid: 6b32ab38f33c0f344943c13a71551391, type: 3}
+      propertyPath: m_text
+      value: 'Gold: 100'
+      objectReference: {fileID: 0}
     - target: {fileID: 3895175669604780651, guid: 6b32ab38f33c0f344943c13a71551391, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -3655,7 +3648,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 6778680895149300554, guid: cabcb61914bebb44d851ff798d01cf63, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -12.47
+      value: -12.4817
       objectReference: {fileID: 0}
     - target: {fileID: 6778680895149300554, guid: cabcb61914bebb44d851ff798d01cf63, type: 3}
       propertyPath: m_LocalPosition.y
@@ -3697,14 +3690,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Base
       objectReference: {fileID: 0}
-    - target: {fileID: 8333274243241994864, guid: cabcb61914bebb44d851ff798d01cf63, type: 3}
-      propertyPath: healthBar
-      value: 
-      objectReference: {fileID: 2021796168}
-    - target: {fileID: 8333274243241994864, guid: cabcb61914bebb44d851ff798d01cf63, type: 3}
-      propertyPath: gameOverPanel
-      value: 
-      objectReference: {fileID: 1292342336}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

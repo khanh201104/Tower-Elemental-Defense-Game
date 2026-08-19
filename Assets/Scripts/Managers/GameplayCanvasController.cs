@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class GameplayCanvasController : MonoBehaviour
 {
@@ -9,12 +10,12 @@ public class GameplayCanvasController : MonoBehaviour
     public static bool IsGlobalRangeVisible = false;
     [Header("--- UI Header ---")]
     public GameObject headerPanel;
-    public Text levelTitleText;
-    public Text goldText;
+    public TextMeshProUGUI levelTitleText;
+    public TextMeshProUGUI goldText;
     public Slider baseHealthSlider;      // Kéo Slider_BaseHealth vào đây
     public Image baseHealthFillImage;
     public Gradient healthGradient;
-    public Text baseHealthText;          // Kéo Text hiển thị số máu vào đây (tùy chọn)
+    public TextMeshProUGUI baseHealthText;          // Kéo Text hiển thị số máu vào đây (tùy chọn)
     public Button pauseButton;   
         // Kéo Button_Pause trong Header vào đây
 
@@ -76,7 +77,7 @@ public class GameplayCanvasController : MonoBehaviour
         if (levelTitleText != null)
         {
             string sceneName = SceneManager.GetActiveScene().name;
-            levelTitleText.text = sceneName.Replace("Map_", "Màn ").Replace("_", " ");
+            levelTitleText.text = sceneName.Replace("Map_", " ").Replace("_", " ").Replace(".", "-");
         }
     }
 
@@ -84,7 +85,7 @@ public class GameplayCanvasController : MonoBehaviour
     {
         if (goldText != null)
         {
-            goldText.text = "Vàng: " + gold;
+            goldText.text = "Gold: " + gold;
         }
     }
 
