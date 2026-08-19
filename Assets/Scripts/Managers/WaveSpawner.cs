@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 public enum DifficultyMode
 {
     Manual,    // Chỉnh sửa từng Wave hoàn toàn thủ công trong Inspector
-    AutoScale  // Tự động scale độ khó dựa theo dữ liệu chuẩn của Màn 1
+    AutoScale  // Tự động scale độ khó dựa theo file Dữ liệu chuẩn
 }
 
 [System.Serializable] 
@@ -29,20 +29,20 @@ public class WaveSpawner : MonoBehaviour
 
     [Header("--- Chế Độ Cân Bằng Độ Khó ---")]
     public DifficultyMode difficultyMode = DifficultyMode.AutoScale;
-    public bool autoDetectLevelFromScene = true; // Tự lấy level theo Scene Build Index (Scene 1 -> Lv1, Scene 2 -> Lv2)
-    public int manualLevelNumber = 1;            // Tự gõ số Level nếu không muốn lấy theo Scene
+    
+    [Tooltip("Kéo file BaseWaveData (Dữ liệu gốc) vào đây nếu dùng AutoScale")]
+    public BaseWaveData defaultWaveData; 
 
-    [Header("--- Hệ Số Tăng Tiến Tự Động (Áp dụng khi chọn AutoScale) ---")]
-    [Tooltip("Tỉ lệ tăng số lượng quái mỗi màn (0.25 = tăng thêm 25% quái mỗi màn)")]
+    public bool autoDetectLevelFromScene = true; 
+    public int manualLevelNumber = 1;            
+
+    [Header("--- Hệ Số Tăng Tiến Tự Động (AutoScale) ---")]
     public float enemyCountGrowthPerLevel = 0.25f;
-
-    [Tooltip("Tỉ lệ quái ra dồn dập hơn mỗi màn (0.08 = giảm thời gian chờ đẻ quái 8% mỗi màn)")]
     public float spawnSpeedBonusPerLevel = 0.08f;
-
-    [Tooltip("Hệ số tăng máu quái theo từng màn (0.2 = tăng thêm 20% máu mỗi màn)")]
     public float enemyHealthGrowthPerLevel = 0.2f;
 
-    [Header("--- Cài đặt các Đợt lính (Waves) ---")]
+    [Header("--- Cài đặt các Đợt lính (Dùng cho Manual) ---")]
+    [Tooltip("Nếu chọn Manual, hãy chỉnh sửa danh sách này. Nếu chọn AutoScale, danh sách này sẽ tự động được ghi đè bằng dữ liệu tính toán từ BaseWaveData.")]
     public Wave[] waves;              
     public Transform spawnPoint;      
 
@@ -59,7 +59,6 @@ public class WaveSpawner : MonoBehaviour
         // Xác định số thứ tự màn chơi
         if (autoDetectLevelFromScene)
         {
-            // Map 1.1 (Scene 1) -> Level 1; Map 1.2 (Scene 2) -> Level 2
             currentLevel = Mathf.Max(1, SceneManager.GetActiveScene().buildIndex);
         }
         else
@@ -67,35 +66,49 @@ public class WaveSpawner : MonoBehaviour
             currentLevel = Mathf.Max(1, manualLevelNumber);
         }
 
-        // Nếu bật AutoScale và đây là từ Màn 2 trở đi -> Tự động tính toán lại thông số
-        if (difficultyMode == DifficultyMode.AutoScale && currentLevel > 1)
+        // Tự động nạp và scale dữ liệu nếu dùng AutoScale
+        if (difficultyMode == DifficultyMode.AutoScale)
         {
             ApplyAutoDifficultyScaling();
         }
     }
 
-    // Tự động nâng cấp số lượng quái và tốc độ ra quái dựa trên dữ liệu gốc
+    // Đọc từ file gốc, Copy ra bản mới và áp dụng hệ số Scale
     private void ApplyAutoDifficultyScaling()
     {
-        int levelDiff = currentLevel - 1; // Độ lệch level so với màn 1
+        if (defaultWaveData == null || defaultWaveData.defaultWaves == null)
+        {
+            Debug.LogError("LỖI: Bạn chọn AutoScale nhưng chưa kéo file Default Wave Data vào WaveSpawner!");
+            return;
+        }
 
+        int levelDiff = currentLevel - 1; 
         float countMultiplier = 1f + (levelDiff * enemyCountGrowthPerLevel);
         float rateMultiplier = Mathf.Max(0.3f, 1f - (levelDiff * spawnSpeedBonusPerLevel));
 
-        for (int w = 0; w < waves.Length; w++)
+        // Khởi tạo lại mảng waves cục bộ bằng đúng số lượng wave trong file gốc
+        waves = new Wave[defaultWaveData.defaultWaves.Length];
+
+        for (int w = 0; w < defaultWaveData.defaultWaves.Length; w++)
         {
-            if (waves[w] == null || waves[w].enemyGroups == null) continue;
+            waves[w] = new Wave();
+            
+            int groupLength = defaultWaveData.defaultWaves[w].enemyGroups.Length;
+            waves[w].enemyGroups = new EnemyGroup[groupLength];
 
-            for (int g = 0; g < waves[w].enemyGroups.Length; g++)
+            for (int g = 0; g < groupLength; g++)
             {
-                EnemyGroup group = waves[w].enemyGroups[g];
-                if (group == null) continue;
+                EnemyGroup originalGroup = defaultWaveData.defaultWaves[w].enemyGroups[g];
+                
+                // Deep Copy (Tạo mới hoàn toàn) để không làm thay đổi file dữ liệu gốc
+                EnemyGroup newGroup = new EnemyGroup
+                {
+                    enemyPrefab = originalGroup.enemyPrefab,
+                    count = Mathf.RoundToInt(originalGroup.count * countMultiplier),
+                    rate = Mathf.Max(0.2f, originalGroup.rate * rateMultiplier)
+                };
 
-                // 1. Tăng số lượng quái
-                group.count = Mathf.RoundToInt(group.count * countMultiplier);
-
-                // 2. Quái ra nhanh hơn (giảm thời gian delay)
-                group.rate = Mathf.Max(0.2f, group.rate * rateMultiplier);
+                waves[w].enemyGroups[g] = newGroup;
             }
         }
 
@@ -150,13 +163,11 @@ public class WaveSpawner : MonoBehaviour
             StartCoroutine(SpawnGroupCoroutine(group));
         }
 
-        // Chờ đẻ xong hết các nhóm
         while (activeGroups > 0)
         {
             yield return null; 
         }
 
-        // Chờ dọn sạch quái trên sân
         while (GameObject.FindGameObjectsWithTag("Enemy").Length > 0)
         {
             yield return new WaitForSeconds(0.1f);
@@ -204,12 +215,9 @@ public class WaveSpawner : MonoBehaviour
         activeGroups--; 
     }
 
-    // Tự động tìm script máu của Quái và tăng máu theo Level
     private void ApplyEnemyHealthBuff(GameObject enemy)
     {
         float healthMultiplier = 1f + ((currentLevel - 1) * enemyHealthGrowthPerLevel);
-
-        // Hỗ trợ nếu quái có hàm hoặc script máu
         enemy.SendMessage("ApplyDifficultyMultiplier", healthMultiplier, SendMessageOptions.DontRequireReceiver);
     }
 }

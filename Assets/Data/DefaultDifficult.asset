@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 403df9a4eb74a124d969106426759247, type: 3}
+  m_Name: DefaultDifficult
+  m_EditorClassIdentifier: Assembly-CSharp::BaseWaveData
+  defaultWaves:
+  - enemyGroups:
+    - enemyPrefab: {fileID: 5395144246103255306, guid: 204fa4def86c3f9489ff0f603f1f6a8b, type: 3}
+      count: 10
+      rate: 1
+  - enemyGroups:
+    - enemyPrefab: {fileID: 5395144246103255306, guid: 204fa4def86c3f9489ff0f603f1f6a8b, type: 3}
+      count: 10
+      rate: 1
+    - enemyPrefab: {fileID: 5395144246103255306, guid: cfa32921e7967a8458795e7e8e6cd058, type: 3}
+      count: 5
+      rate: 2
+  - enemyGroups:
+    - enemyPrefab: {fileID: 5395144246103255306, guid: 204fa4def86c3f9489ff0f603f1f6a8b, type: 3}
+      count: 10
+      rate: 1
+    - enemyPrefab: {fileID: 5395144246103255306, guid: cfa32921e7967a8458795e7e8e6cd058, type: 3}
+      count: 5
+      rate: 2
+    - enemyPrefab: {fileID: 5395144246103255306, guid: 28b60313440ba6d4e9d785cf3c43c718, type: 3}
+      count: 1
+      rate: 1

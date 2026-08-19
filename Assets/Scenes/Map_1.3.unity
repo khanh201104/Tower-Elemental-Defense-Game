@@ -232,7 +232,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameEconomy
   gold: 100
-  goldText: {fileID: 199462509}
   towerPrefab: {fileID: 5620580406772248784, guid: 9d6db4d381b63374eb2a67d164f71591, type: 3}
   towerCost: 50
   shopSpawnPoint: {fileID: 1604147612}
@@ -277,17 +276,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &199462509 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8156689821127536831, guid: 6b32ab38f33c0f344943c13a71551391, type: 3}
-  m_PrefabInstance: {fileID: 936192636719026328}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
 --- !u!1 &297629554
 GameObject:
   m_ObjectHideFlags: 0
@@ -317,6 +305,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5c68567bd9bf794f8fcb7af85c1e3e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WaveSpawner
+  difficultyMode: 1
+  defaultWaveData: {fileID: 11400000, guid: 29eabe8b693065c429a2c6b58f58b223, type: 2}
+  autoDetectLevelFromScene: 1
+  manualLevelNumber: 1
+  enemyCountGrowthPerLevel: 0.25
+  spawnSpeedBonusPerLevel: 0.08
+  enemyHealthGrowthPerLevel: 0
   waves:
   - enemyGroups:
     - enemyPrefab: {fileID: 5395144246103255306, guid: 204fa4def86c3f9489ff0f603f1f6a8b, type: 3}
@@ -343,6 +338,7 @@ MonoBehaviour:
       count: 1
       rate: 1
   spawnPoint: {fileID: 937930885}
+  currentLevel: 1
   currentWaveIndex: 0
 --- !u!4 &297629556
 Transform:
@@ -2974,7 +2970,7 @@ Tilemap:
   - m_RefCount: 0
     m_Data: {fileID: 0}
   - m_RefCount: 125
-    m_Data: {fileID: 11400000, guid: 2d32e2e8f0f6995418478b9214cc2426, type: 2}
+    m_Data: {fileID: 11400000, guid: 7542619d5ebe05048a12135b54accca0, type: 2}
   - m_RefCount: 7
     m_Data: {fileID: 11400000, guid: 1643c66abcb211b40817affa6cf7c674, type: 2}
   - m_RefCount: 6
@@ -2985,11 +2981,13 @@ Tilemap:
   - m_RefCount: 7
     m_Data: {fileID: 21300000, guid: 37ffaa829e062474aa961a7b453b189b, type: 3}
   - m_RefCount: 125
-    m_Data: {fileID: 21300000, guid: 4dbc6aff922eb1c41959113168d47639, type: 3}
+    m_Data: {fileID: 21300000, guid: 6756d354e5d703141afe4f78e59947fc, type: 3}
   - m_RefCount: 42
     m_Data: {fileID: 21300000, guid: b076a53647f378147a7669ddcf36722d, type: 3}
   - m_RefCount: 6
     m_Data: {fileID: 21300000, guid: ac73ef51c783a8e4380a0281708b4451, type: 3}
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
   m_TileMatrixArray:
   - m_RefCount: 180
     m_Data:
@@ -3012,6 +3010,8 @@ Tilemap:
   m_TileColorArray:
   - m_RefCount: 180
     m_Data: {r: 1, g: 1, b: 1, a: 1}
+  - m_RefCount: 0
+    m_Data: {r: 1.67e-43, g: 1.67e-43, b: 1.67e-43, a: 1.67e-43}
   m_TileObjectToInstantiateArray: []
   m_AnimationFrameRate: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -3572,6 +3572,10 @@ PrefabInstance:
     - target: {fileID: 5700693664976421165, guid: 6b32ab38f33c0f344943c13a71551391, type: 3}
       propertyPath: m_Name
       value: Canvas_Gameplay
+      objectReference: {fileID: 0}
+    - target: {fileID: 7700575984576383466, guid: 6b32ab38f33c0f344943c13a71551391, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8619171522853896749, guid: 6b32ab38f33c0f344943c13a71551391, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
