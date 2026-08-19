@@ -55,7 +55,9 @@ public class GameManager : MonoBehaviour
 
             case GameState.Resume:
                 Time.timeScale = 1f;
-                if (footerPanel != null) footerPanel.SetActive(false);
+                // SỬA DÒNG NÀY: Thay SetActive(false) thành SetActive(true)
+                if (footerPanel != null) footerPanel.SetActive(true); 
+                
                 if (pauseMenuPanel != null) pauseMenuPanel.SetActive(false);
                 if (settingsPanel != null) settingsPanel.SetActive(false);
                 
@@ -88,6 +90,10 @@ public class GameManager : MonoBehaviour
                 SaveLevelProgress();
                 Time.timeScale = 0f;
                 break;
+        }
+        if (GameplayCanvasController.Instance != null)
+        {
+            GameplayCanvasController.Instance.UpdateFooterButtons(currentState);
         }
     }
 

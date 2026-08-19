@@ -25,11 +25,13 @@ public class EnemyMovement : MonoBehaviour
     private Transform currentTargetTower;
 
     private SpriteRenderer spriteRenderer;
+    private EnemyAnimation enemyAnimation; // Tham chiếu Animation
 
     void Start()
     {
         currentSpeed = baseSpeed;
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        enemyAnimation = GetComponent<EnemyAnimation>();
 
         GameObject pathGO = GameObject.Find("Path");
         if (pathGO != null)
@@ -62,20 +64,28 @@ public class EnemyMovement : MonoBehaviour
 
         FindTarget();
 
+        // 1. Nếu có Tháp trong tầm đánh -> Dừng lại và Đánh
         if (currentTargetTower != null)
         {
+            if (enemyAnimation != null) enemyAnimation.SetAttacking(true);
+
             if (attackTimer <= 0)
             {
                 AttackTower();
                 attackTimer = attackCooldown;
             }
         }
+        // 2. Nếu chưa tới cuối đường -> Đi bộ theo Waypoint
         else if (waypoints != null && targetIndex < waypoints.Length)
         {
+            if (enemyAnimation != null) enemyAnimation.SetAttacking(false);
             MoveAlongPath();
         }
+        // 3. Nếu đã tới cuối đường -> Đánh Nhà chính
         else
         {
+            if (enemyAnimation != null) enemyAnimation.SetAttacking(true);
+
             if (attackTimer <= 0)
             {
                 AttackBase();
@@ -94,11 +104,10 @@ public class EnemyMovement : MonoBehaviour
         {
             if (hit.CompareTag("Tower"))
             {
-                // [MỚI FIX] CHỈ ĐÁNH THÁP ĐANG ACTIVE TRÊN SÂN
                 TowerController towerCtrl = hit.GetComponent<TowerController>();
                 if (towerCtrl != null && !towerCtrl.isOperational)
                 {
-                    continue; // Bỏ qua tháp nằm ở hàng chờ (Inactive)
+                    continue; 
                 }
 
                 float distanceToTower = Vector2.Distance(transform.position, hit.transform.position);
@@ -170,11 +179,13 @@ public class EnemyMovement : MonoBehaviour
             float directionX = targetPoint.position.x - transform.position.x;
             if (directionX > 0.1f)
             {
-                spriteRenderer.flipX = true;
+                if (enemyAnimation != null) enemyAnimation.FlipSprite(true);
+                else spriteRenderer.flipX = true;
             }
             else if (directionX < -0.1f)
             {
-                spriteRenderer.flipX = false;
+                if (enemyAnimation != null) enemyAnimation.FlipSprite(false);
+                else spriteRenderer.flipX = false;
             }
         }
 

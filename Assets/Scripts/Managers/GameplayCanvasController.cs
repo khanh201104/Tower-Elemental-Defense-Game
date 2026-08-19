@@ -6,6 +6,7 @@ public class GameplayCanvasController : MonoBehaviour
 {
     public static GameplayCanvasController Instance;
 
+    public static bool IsGlobalRangeVisible = false;
     [Header("--- UI Header ---")]
     public GameObject headerPanel;
     public Text levelTitleText;
@@ -27,6 +28,7 @@ public class GameplayCanvasController : MonoBehaviour
     [Header("--- Nút Khác Ngoài Màn Hình ---")]
     public Button nextWaveButton;
     public Button shopButton;
+    public Button toggleRangeButton;
 
     [Header("--- Nút Trong Panel Pause ---")]
     public Button resumeButton;
@@ -46,6 +48,8 @@ public class GameplayCanvasController : MonoBehaviour
     {
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
+        // Reset trạng thái hiển thị mỗi khi load lại Scene
+        IsGlobalRangeVisible = false;
     }
 
     void Start()
@@ -119,6 +123,9 @@ public class GameplayCanvasController : MonoBehaviour
     // --- GẮN SỰ KIỆN BUTTON ---
     private void SetupButtonListeners()
     {
+        if (toggleRangeButton != null)
+            toggleRangeButton.onClick.AddListener(ToggleAllTowerRanges);
+
         if (pauseButton != null)
             pauseButton.onClick.AddListener(() => GameManager.Instance?.FreezeGame());
 
@@ -157,5 +164,30 @@ public class GameplayCanvasController : MonoBehaviour
 
         if (mainMenuButtonVictory != null)
             mainMenuButtonVictory.onClick.AddListener(() => GameManager.Instance?.ReturnToMainMenu());
+    }
+    private void ToggleAllTowerRanges()
+    {
+        IsGlobalRangeVisible = !IsGlobalRangeVisible; // Đảo trạng thái
+
+        // Tìm tất cả các tháp hiện có trên bản đồ (Kể cả trên sân và hàng chờ)
+        TowerRange[] allTowers = FindObjectsByType<TowerRange>(FindObjectsSortMode.None);
+        
+        foreach (TowerRange tower in allTowers)
+        {
+            tower.ShowRange(IsGlobalRangeVisible);
+        }
+    }
+    public void UpdateFooterButtons(GameState state)
+    {
+        // Chỉ cho phép bấm các nút này khi đang ở trạng thái Pause (Chuẩn bị)
+        bool isInteractable = (state == GameState.Pause);
+
+        if (nextWaveButton != null) 
+            nextWaveButton.interactable = isInteractable;
+
+        if (shopButton != null) 
+            shopButton.interactable = isInteractable;
+
+        // Lưu ý: Không can thiệp vào toggleRangeButton để nó luôn bấm được!
     }
 }

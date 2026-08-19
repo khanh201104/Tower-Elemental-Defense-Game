@@ -106,7 +106,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Bullet
   speed: 10
   damage: 3
-  aoeRadius: 3
+  aoeRadius: 2
   explosionVFX: {fileID: 3656039449519646671, guid: e2fedad994553424e98ea62a19a5bdb5, type: 3}
   isCritBullet: 1
   critChance: 0.1

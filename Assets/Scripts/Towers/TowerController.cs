@@ -45,6 +45,14 @@ public class TowerController : MonoBehaviour
         // Active = 100% (1f), Inactive trên Hàng chờ = 80% (0.8f)
         SetAlpha(isOperational ? 1f : 0.8f);
 
+        // --- ĐOẠN MỚI THÊM: Ép cập nhật lại vòng tròn tầm đánh ---
+        TowerRange towerRange = GetComponent<TowerRange>();
+        if (towerRange != null)
+        {
+            towerRange.ShowRange(GameplayCanvasController.IsGlobalRangeVisible);
+        }
+        // ---------------------------------------------------------
+
         if (isOperational)
         {
             Debug.Log("✅ " + gameObject.name + " đã được đặt ĐÚNG VỊ TRÍ và bắt đầu HOẠT ĐỘNG!");

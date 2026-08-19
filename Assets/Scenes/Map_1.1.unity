@@ -316,13 +316,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5c68567bd9bf794f8fcb7af85c1e3e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WaveSpawner
+  difficultyMode: 1
+  autoDetectLevelFromScene: 1
+  manualLevelNumber: 1
+  enemyCountGrowthPerLevel: 2
+  spawnSpeedBonusPerLevel: 0.08
+  enemyHealthGrowthPerLevel: 0.2
   waves:
   - enemyGroups:
     - enemyPrefab: {fileID: 5395144246103255306, guid: 204fa4def86c3f9489ff0f603f1f6a8b, type: 3}
       count: 10
-      rate: 1
-    - enemyPrefab: {fileID: 5395144246103255306, guid: cfa32921e7967a8458795e7e8e6cd058, type: 3}
-      count: 5
       rate: 1
   - enemyGroups:
     - enemyPrefab: {fileID: 5395144246103255306, guid: 204fa4def86c3f9489ff0f603f1f6a8b, type: 3}
@@ -342,6 +345,7 @@ MonoBehaviour:
       count: 1
       rate: 1
   spawnPoint: {fileID: 937930885}
+  currentLevel: 1
   currentWaveIndex: 0
 --- !u!4 &297629556
 Transform:
@@ -596,7 +600,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -20, y: -19.999998, z: -10}
+  m_LocalPosition: {x: -20, y: -20, z: -2.0555577}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3629,6 +3633,10 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 809320249}
+    - target: {fileID: 7700575984576383466, guid: 6b32ab38f33c0f344943c13a71551391, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8194602930134225916, guid: 6b32ab38f33c0f344943c13a71551391, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
