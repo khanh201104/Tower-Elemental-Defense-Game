@@ -2,6 +2,9 @@ using UnityEngine;
 
 public class BaseHealth : MonoBehaviour
 {
+    public static BaseHealth Instance;
+
+    [Header("Chỉ số Máu Nhà Chính")]
     public float maxHealth = 100f;
     private float currentHealth;
 
@@ -10,14 +13,6 @@ public class BaseHealth : MonoBehaviour
     public float regenAmount = 5f;         
     public float regenInterval = 1f;       
     private float regenTimer = 0f;
-
-    [Header("UI Máu Nhà Chính")]
-    public HealthBar healthBar;
-
-    [Header("UI Game Over")]
-    public GameObject gameOverPanel; // Kéo Bảng Panel Game Over vào đây
-
-    public static BaseHealth Instance; 
 
     void Awake()
     {
@@ -28,17 +23,7 @@ public class BaseHealth : MonoBehaviour
     void Start()
     {
         currentHealth = maxHealth;
-
-        if (healthBar != null)
-        {
-            healthBar.UpdateHealth(currentHealth, maxHealth);
-        }
-
-        // Đảm bảo ẩn bảng Game Over lúc mới bắt đầu
-        if (gameOverPanel != null)
-        {
-            gameOverPanel.SetActive(false);
-        }
+        UpdateHealthUI();
     }
 
     void Update()
@@ -65,10 +50,7 @@ public class BaseHealth : MonoBehaviour
         currentHealth -= amount;
         currentHealth = Mathf.Max(0f, currentHealth);
 
-        if (healthBar != null)
-        {
-            healthBar.UpdateHealth(currentHealth, maxHealth);
-        }
+        UpdateHealthUI();
 
         Debug.Log("🚨 BÁO ĐỘNG! Nhà chính bị cắn! Máu còn: " + currentHealth);
 
@@ -83,25 +65,27 @@ public class BaseHealth : MonoBehaviour
         currentHealth += amount;
         currentHealth = Mathf.Min(maxHealth, currentHealth);
 
-        if (healthBar != null)
-        {
-            healthBar.UpdateHealth(currentHealth, maxHealth);
-        }
+        UpdateHealthUI();
 
         Debug.Log("💚 Nhà chính được HỒI MÁU! Máu hiện tại: " + currentHealth);
+    }
+
+    private void UpdateHealthUI()
+    {
+        // Tự động gửi thông số máu sang Canvas Prefab để cập nhật Slider & Text
+        if (GameplayCanvasController.Instance != null)
+        {
+            GameplayCanvasController.Instance.UpdateBaseHealthDisplay(currentHealth, maxHealth);
+        }
     }
 
     void GameOver()
     {
         Debug.Log("💀 GAME OVER! Nhà chính đã nổ!");
 
-        // 1. Bật Bảng GameOver UI
-        if (gameOverPanel != null)
+        if (GameManager.Instance != null)
         {
-            gameOverPanel.SetActive(true);
+            GameManager.Instance.SetState(GameState.GameOver);
         }
-
-        // 2. Tạm dừng thời gian trong game (Tháp ngừng bắn, quái ngừng đi)
-        Time.timeScale = 0f; 
     }
 }

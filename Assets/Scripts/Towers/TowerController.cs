@@ -3,7 +3,7 @@ using UnityEngine;
 public class TowerController : MonoBehaviour
 {
     [Header("Trạng Thái Hoạt Động")]
-    public bool isOperational = false; // Mặc định là false (Chưa hoạt động)
+    public bool isOperational = false; 
 
     private SpriteRenderer spriteRenderer;
     private Collider2D towerCollider;
@@ -16,31 +16,34 @@ public class TowerController : MonoBehaviour
 
     void Start()
     {
-        // Khi vừa tạo ra, nếu chưa Operational thì làm mờ tháp + tắt Collider
         if (!isOperational)
         {
             SetOperational(false);
         }
     }
 
-    // Hàm Bật/Tắt trạng thái hoạt động của Tháp
+    // Hàm bổ sung: Tùy chỉnh độ mờ linh hoạt
+    public void SetAlpha(float alpha)
+    {
+        if (spriteRenderer != null)
+        {
+            Color color = spriteRenderer.color;
+            color.a = alpha;
+            spriteRenderer.color = color;
+        }
+    }
+
     public void SetOperational(bool state)
     {
         isOperational = state;
 
-        // 1. Quản lý Collider (Quái chỉ vã tháp khi state = true)
         if (towerCollider != null)
         {
-            towerCollider.enabled = isOperational;
+            towerCollider.enabled = true; 
         }
 
-        // 2. Quản lý Đồ họa (Làm mờ khi chưa đặt, hiện rõ khi đã đặt)
-        if (spriteRenderer != null)
-        {
-            Color color = spriteRenderer.color;
-            color.a = isOperational ? 1f : 0.5f; // Alpha = 1 (Hiện rõ), Alpha = 0.5 (Mờ)
-            spriteRenderer.color = color;
-        }
+        // Active = 100% (1f), Inactive trên Hàng chờ = 80% (0.8f)
+        SetAlpha(isOperational ? 1f : 0.8f);
 
         if (isOperational)
         {
@@ -50,7 +53,6 @@ public class TowerController : MonoBehaviour
 
     void Update()
     {
-        // BẮT BUỘC: Nếu tháp chưa hoạt động -> Ngưng mọi logic phía dưới
         if (!isOperational) return;
     }
 }

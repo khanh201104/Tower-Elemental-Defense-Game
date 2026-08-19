@@ -1,13 +1,11 @@
 using UnityEngine;
-using UnityEngine.UI; // Thư viện để can thiệp vào giao diện (Chữ, Nút bấm)
 
 public class GameEconomy : MonoBehaviour
 {
     public static GameEconomy Instance;
-    
+
     [Header("Tài sản")]
     public int gold = 100; // Cho sẵn 100 vàng làm vốn khởi nghiệp
-    public Text goldText;  // Chữ hiển thị vàng
 
     [Header("Cửa hàng")]
     public GameObject towerPrefab;   // Bản mẫu của Tháp
@@ -16,7 +14,8 @@ public class GameEconomy : MonoBehaviour
 
     void Awake()
     {
-        Instance = this;
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
     }
 
     void Start()
@@ -30,15 +29,15 @@ public class GameEconomy : MonoBehaviour
         UpdateUI();
     }
 
-    // Hàm này sẽ được gán vào Nút bấm trên màn hình
+    // Hàm mua tháp
     public void BuyTower()
     {
         if (gold >= towerCost)
         {
             gold -= towerCost;
             UpdateUI();
-            
-            // Đẻ ra 1 cái tháp mới tại vị trí Shop
+
+            // Sinh ra 1 tháp mới tại vị trí Shop
             Instantiate(towerPrefab, shopSpawnPoint.position, Quaternion.identity);
             Debug.Log("Mua tháp thành công!");
         }
@@ -48,11 +47,12 @@ public class GameEconomy : MonoBehaviour
         }
     }
 
-    void UpdateUI()
+    public void UpdateUI()
     {
-        if (goldText != null)
+        // Tự động báo sang Canvas Prefab để cập nhật số tiền hiển thị
+        if (GameplayCanvasController.Instance != null)
         {
-            goldText.text = "Vàng: " + gold;
+            GameplayCanvasController.Instance.UpdateGoldDisplay(gold);
         }
     }
 }

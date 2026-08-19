@@ -47,10 +47,18 @@ public class MergeManager : MonoBehaviour
         if (towerA.towerLevel != towerB.towerLevel)
             return false; 
 
-        Vector3 spawnPos = towerA.transform.position;
+        // Lấy vị trí của tháp bị đè (towerB) làm vị trí sinh tháp mới
+        Vector3 spawnPos = towerB.transform.position;
         string elemA = towerA.elementType;
         string elemB = towerB.elementType;
         
+        // KIỂM TRA: Vị trí gộp đang ở trên Hàng chờ hay Sân đấu
+        bool isOnBench = false;
+        if (BenchManager.Instance != null)
+        {
+            isOnBench = (BenchManager.Instance.GetNearestSlotIndex(spawnPos) != -1);
+        }
+
         // 1. NÂNG CẤP LEVEL (Ghép 2 tháp giống hệt nhau)
         if (elemA == elemB)
         {
@@ -62,7 +70,7 @@ public class MergeManager : MonoBehaviour
 
             int nextLevel = towerA.towerLevel + 1;
             ExecuteMerge(towerA, towerB); 
-            SpawnUpgradedTower(elemA, nextLevel, spawnPos);
+            SpawnUpgradedTower(elemA, nextLevel, spawnPos, isOnBench);
             return true;
         }
 
@@ -72,7 +80,7 @@ public class MergeManager : MonoBehaviour
         {
             string heLai = mergeRecipes[recipeKey];
             ExecuteMerge(towerA, towerB);
-            SpawnHybridTower(heLai, towerA.towerLevel, spawnPos);
+            SpawnHybridTower(heLai, towerA.towerLevel, spawnPos, isOnBench);
             return true;
         }
 
@@ -80,23 +88,27 @@ public class MergeManager : MonoBehaviour
     }
 
     void ExecuteMerge(TowerDrag a, TowerDrag b)
-{
-    // GIẢI PHÓNG ĐÚNG Ô TILE BAN ĐẦU CỦA 2 THÁP CỦ
-    if (TowerPlacementManager.Instance != null)
     {
-        // Giải phóng vị trí gốc của tháp A (Ví dụ: ô spawnPoint vừa bị kéo đi)
-        TowerPlacementManager.Instance.ClearTile(a.originalPosition);
-        
-        // Giải phóng vị trí của tháp B (Tháp đứng yên nhận gộp)
-        TowerPlacementManager.Instance.ClearTile(b.originalPosition);
+        // Giải phóng ô đăng ký trên Hàng chờ (nếu có tháp nằm ở Hàng chờ)
+        if (BenchManager.Instance != null)
+        {
+            BenchManager.Instance.RemoveTowerFromBench(a.gameObject);
+            BenchManager.Instance.RemoveTowerFromBench(b.gameObject);
+        }
+
+        // GIẢI PHÓNG ĐÚNG Ô TILE BAN ĐẦU CỦA 2 THÁP CỦ
+        if (TowerPlacementManager.Instance != null)
+        {
+            TowerPlacementManager.Instance.ClearTile(a.originalPosition);
+            TowerPlacementManager.Instance.ClearTile(b.originalPosition);
+        }
+
+        Destroy(a.gameObject);
+        Destroy(b.gameObject);
     }
 
-    Destroy(a.gameObject);
-    Destroy(b.gameObject);
-}
-
     // Xử lý đẻ tháp nâng cấp
-    void SpawnUpgradedTower(string element, int level, Vector3 pos)
+    void SpawnUpgradedTower(string element, int level, Vector3 pos, bool isOnBench)
     {
         GameObject prefabToSpawn = null;
 
@@ -119,11 +131,11 @@ public class MergeManager : MonoBehaviour
             else if (element == "DamLay") prefabToSpawn = damLayLv3;
         }
 
-        SpawnTowerWithPlacementManager(prefabToSpawn, pos, $"Nâng cấp {element} Cấp {level}");
+        SpawnTowerWithPlacementManager(prefabToSpawn, pos, isOnBench, $"Nâng cấp {element} Cấp {level}");
     }
 
     // Xử lý đẻ tháp lai
-    void SpawnHybridTower(string resultElement, int level, Vector3 pos)
+    void SpawnHybridTower(string resultElement, int level, Vector3 pos, bool isOnBench)
     {
         GameObject prefabToSpawn = null;
 
@@ -146,28 +158,55 @@ public class MergeManager : MonoBehaviour
             else if (resultElement == "DamLay") prefabToSpawn = damLayLv3;
         }
 
-        SpawnTowerWithPlacementManager(prefabToSpawn, pos, $"Lai tạo {resultElement} Cấp {level}");
+        SpawnTowerWithPlacementManager(prefabToSpawn, pos, isOnBench, $"Lai tạo {resultElement} Cấp {level}");
     }
 
-    // HÀM BỔ SUNG: Sinh tháp mới qua PlacementManager để tự động bật Hoạt Động (Operational = true)
-    void SpawnTowerWithPlacementManager(GameObject prefab, Vector3 pos, string debugText)
+    // HÀM BỔ SUNG: Quản lý trạng thái ACTIVE / INACTIVE dựa vào vị trí sinh tháp
+    void SpawnTowerWithPlacementManager(GameObject prefab, Vector3 pos, bool isOnBench, string debugText)
     {
         if (prefab == null) return;
 
-        if (TowerPlacementManager.Instance != null)
+        if (isOnBench)
         {
-            TowerPlacementManager.Instance.SpawnMergedTower(prefab, pos);
-        }
-        else
-        {
+            // A. NẾU GỘP TRÊN HÀNG CHỜ -> Ép về trạng thái INACTIVE (Mờ 50%, dừng bắn)
             GameObject newTower = Instantiate(prefab, pos, Quaternion.identity);
+
+            // Căn thẳng vào tâm của ô Bench gần nhất
+            if (BenchManager.Instance != null)
+            {
+                int slotIdx = BenchManager.Instance.GetNearestSlotIndex(pos);
+                if (slotIdx != -1)
+                {
+                    newTower.transform.position = BenchManager.Instance.benchSlots[slotIdx].position;
+                }
+            }
+
             TowerController controller = newTower.GetComponent<TowerController>();
             if (controller != null)
             {
-                controller.SetOperational(true);
+                controller.SetOperational(false); // Inactive
             }
-        }
 
-        Debug.Log($"✅ Đã {debugText} thành công!");
+            Debug.Log($"✅ Đã {debugText} thành công trên HÀNG CHỜ (Trạng thái: Inactive)!");
+        }
+        else
+        {
+            // B. NẾU GỘP TRÊN SÂN ĐẤU -> Bật ACTIVE (Sáng 100%, bắt đầu bắn)
+            if (TowerPlacementManager.Instance != null)
+            {
+                TowerPlacementManager.Instance.SpawnMergedTower(prefab, pos);
+            }
+            else
+            {
+                GameObject newTower = Instantiate(prefab, pos, Quaternion.identity);
+                TowerController controller = newTower.GetComponent<TowerController>();
+                if (controller != null)
+                {
+                    controller.SetOperational(true); // Active
+                }
+            }
+
+            Debug.Log($"✅ Đã {debugText} thành công trên SÂN ĐẤU (Trạng thái: Active)!");
+        }
     }
 }
