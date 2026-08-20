@@ -235,11 +235,6 @@ MonoBehaviour:
   towerPrefab: {fileID: 5620580406772248784, guid: 9d6db4d381b63374eb2a67d164f71591, type: 3}
   towerCost: 50
   shopSpawnPoint: {fileID: 1604147612}
---- !u!224 &35382983 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 3596186596214438015, guid: 6b32ab38f33c0f344943c13a71551391, type: 3}
-  m_PrefabInstance: {fileID: 936192636719026328}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &59780876 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5196414710053205209, guid: 6b32ab38f33c0f344943c13a71551391, type: 3}
@@ -769,8 +764,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   currentState: 0
+  waveEndDelay: 1
+  endGameDelay: 1
   footerPanel: {fileID: 1904807190}
-  pauseMenuPanel: {fileID: 1871927980}
+  pauseMenuPanel: {fileID: 0}
   settingsPanel: {fileID: 2049704772}
   gameOverPanel: {fileID: 1292342336}
   victoryPanel: {fileID: 59780876}
@@ -887,6 +884,22 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1708182829}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &942396935 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7525226424886977832, guid: 6b32ab38f33c0f344943c13a71551391, type: 3}
+  m_PrefabInstance: {fileID: 936192636719026328}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1012521004 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8153049289498166974, guid: 6b32ab38f33c0f344943c13a71551391, type: 3}
+  m_PrefabInstance: {fileID: 936192636719026328}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1 &1065229631
 GameObject:
   m_ObjectHideFlags: 0
@@ -969,6 +982,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1109452967 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6315646111396620081, guid: 6b32ab38f33c0f344943c13a71551391, type: 3}
+  m_PrefabInstance: {fileID: 936192636719026328}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
 --- !u!1 &1209229018
 GameObject:
   m_ObjectHideFlags: 0
@@ -3195,11 +3219,6 @@ Transform:
   - {fileID: 1689425073}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1708780609 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1083290029085733901, guid: 6b32ab38f33c0f344943c13a71551391, type: 3}
-  m_PrefabInstance: {fileID: 936192636719026328}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1722547548
 GameObject:
   m_ObjectHideFlags: 0
@@ -3308,19 +3327,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef189158490fee9438e1c82cba1d07ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShopManager
-  shopPanel: {fileID: 1708780609}
-  itemContainer: {fileID: 35382983}
-  shopItemPrefab: {fileID: 7799801112602143585, guid: f72382a6e7880f84eb4de0a6d00ccf3a, type: 3}
+  shopModal: {fileID: 942396935}
+  closeButton: {fileID: 1109452967}
+  currentGoldText: {fileID: 1012521004}
+  contentArea: {fileID: 2040300077}
+  shopCardPrefab: {fileID: 4542406382145483825, guid: 512938928d24ef949adbe4e35a286862, type: 3}
   shopItems:
-  - itemName: "Th\xE1p l\u1EEDa lv1"
+  - itemName: Fire Tower lv1
     itemIcon: {fileID: 21300000, guid: 23c4f2aa1770d134a82bf55d4dcd93bf, type: 3}
     itemPrice: 50
     towerPrefab: {fileID: 5620580406772248784, guid: 9d6db4d381b63374eb2a67d164f71591, type: 3}
-  - itemName: "Th\xE1p n\u01B0\u1EDBc lv1"
+  - itemName: Water Tower lv1
     itemIcon: {fileID: 21300000, guid: 663b47a2e08e293468d00d5ad127d7e4, type: 3}
     itemPrice: 50
     towerPrefab: {fileID: 5620580406772248784, guid: 8061c9c9afecbb34eb84e3992629de01, type: 3}
-  - itemName: "Th\xE1p \u0111\u1EA5t lv1"
+  - itemName: Earth Tower lv1
     itemIcon: {fileID: 21300000, guid: 1dd74275652b6b64a87f0e5ff5bf09ac, type: 3}
     itemPrice: 50
     towerPrefab: {fileID: 5620580406772248784, guid: f0883e2361767254e8f7059e22df639a, type: 3}
@@ -3339,11 +3360,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1871927980 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3367514075917568260, guid: 6b32ab38f33c0f344943c13a71551391, type: 3}
-  m_PrefabInstance: {fileID: 936192636719026328}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1904807190 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4574732675177957504, guid: 6b32ab38f33c0f344943c13a71551391, type: 3}
@@ -3428,6 +3444,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1708182829}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!224 &2040300077 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 6413422780199179137, guid: 6b32ab38f33c0f344943c13a71551391, type: 3}
+  m_PrefabInstance: {fileID: 936192636719026328}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2049704772 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 9047346063303857503, guid: 6b32ab38f33c0f344943c13a71551391, type: 3}
@@ -3450,10 +3471,6 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1883569063916104484, guid: 6b32ab38f33c0f344943c13a71551391, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 1798634218}
-    - target: {fileID: 2057255951062395940, guid: 6b32ab38f33c0f344943c13a71551391, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1798634218}
@@ -3741,12 +3758,12 @@ SceneRoots:
   - {fileID: 519420032}
   - {fileID: 619394802}
   - {fileID: 809320246}
+  - {fileID: 1798634219}
   - {fileID: 1708182829}
   - {fileID: 297629556}
   - {fileID: 33156822}
   - {fileID: 1722547551}
   - {fileID: 936192636719026328}
-  - {fileID: 1798634219}
   - {fileID: 174605732}
   - {fileID: 465541331}
   - {fileID: 2173162471717882385}

@@ -178,15 +178,16 @@ public class WaveSpawner : MonoBehaviour
 
         if (currentWaveIndex >= waves.Length)
         {
-            Debug.Log("🎉 BẠN ĐÃ CHIẾN THẮNG TOÀN BỘ GAME!");
+            Debug.Log("🎉 BẠN ĐÃ CHIẾN THẮNG TOÀN BỘ CÁC WAVE!");
             if (GameManager.Instance != null)
             {
-                GameManager.Instance.SetState(GameState.Victory);
+                // SỬA TẠI ĐÂY: Kích hoạt coroutine delay 1s trước khi bật VictoryPanel
+                GameManager.Instance.TriggerVictory();
             }
         }
         else
         {
-            Debug.Log($"✅ Đã dọn sạch Wave {currentWaveIndex}! Chuyển về trạng thái PAUSE.");
+            Debug.Log($"✅ Đã dọn sạch Wave {currentWaveIndex}! Chuyển về trạng thái chuẩn bị.");
             if (GameManager.Instance != null)
             {
                 GameManager.Instance.OnWaveCompleted();

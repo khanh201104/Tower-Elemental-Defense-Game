@@ -7,6 +7,7 @@ public class BaseHealth : MonoBehaviour
     [Header("Chỉ số Máu Nhà Chính")]
     public float maxHealth = 100f;
     private float currentHealth;
+    private bool isDead = false; // Cờ chặn gọi GameOver nhiều lần khi quái đánh dồn dập
 
     [Header("Khả năng Tự Hồi Máu (Regen)")]
     public bool enableRegen = false;       
@@ -22,6 +23,7 @@ public class BaseHealth : MonoBehaviour
 
     void Start()
     {
+        isDead = false;
         currentHealth = maxHealth;
         UpdateHealthUI();
     }
@@ -33,7 +35,7 @@ public class BaseHealth : MonoBehaviour
 
     void HandleRegeneration()
     {
-        if (enableRegen && currentHealth < maxHealth)
+        if (!isDead && enableRegen && currentHealth < maxHealth)
         {
             regenTimer += Time.deltaTime;
 
@@ -47,6 +49,8 @@ public class BaseHealth : MonoBehaviour
 
     public void TakeDamage(float amount)
     {
+        if (isDead) return; // Bỏ qua sát thương nếu nhà chính đã nổ
+
         currentHealth -= amount;
         currentHealth = Mathf.Max(0f, currentHealth);
 
@@ -54,14 +58,17 @@ public class BaseHealth : MonoBehaviour
 
         Debug.Log("🚨 BÁO ĐỘNG! Nhà chính bị cắn! Máu còn: " + currentHealth);
 
-        if (currentHealth <= 0)
+        if (currentHealth <= 0f)
         {
+            isDead = true;
             GameOver();
         }
     }
 
     public void Heal(float amount)
     {
+        if (isDead) return;
+
         currentHealth += amount;
         currentHealth = Mathf.Min(maxHealth, currentHealth);
 
@@ -72,7 +79,6 @@ public class BaseHealth : MonoBehaviour
 
     private void UpdateHealthUI()
     {
-        // Tự động gửi thông số máu sang Canvas Prefab để cập nhật Slider & Text
         if (GameplayCanvasController.Instance != null)
         {
             GameplayCanvasController.Instance.UpdateBaseHealthDisplay(currentHealth, maxHealth);
@@ -85,7 +91,7 @@ public class BaseHealth : MonoBehaviour
 
         if (GameManager.Instance != null)
         {
-            GameManager.Instance.SetState(GameState.GameOver);
+            GameManager.Instance.TriggerGameOver();
         }
     }
 }

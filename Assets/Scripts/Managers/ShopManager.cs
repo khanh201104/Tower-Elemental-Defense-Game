@@ -1,27 +1,31 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 [System.Serializable]
 public class ShopItemData
 {
     public string itemName = "Tháp Lửa";
-    public Sprite itemIcon;          // Ảnh hiển thị trong Shop
-    public int itemPrice = 50;       // Giá tiền
-    public GameObject towerPrefab;   // Prefab tháp tương ứng
+    public Sprite itemIcon;          
+    public int itemPrice = 50;       
+    public GameObject towerPrefab;   
 }
 
 public class ShopManager : MonoBehaviour
 {
     public static ShopManager Instance;
 
-    [Header("Bảng Giao Diện Shop (Tab Pop-up)")]
-    public GameObject shopPanel;       // Kéo khung Bảng Shop UI vào đây
+    [Header("Bảng Cửa Hàng (Shop Modal)")]
+    public GameObject shopModal;       
+    public Button closeButton;         
+    public TextMeshProUGUI currentGoldText; 
 
-    [Header("Cấu Hình Giao Diện Danh Sách Vật Phẩm")]
-    public Transform itemContainer;   // Nơi chứa các ô Shop (Gán Grid Layout Group)
-    public GameObject shopItemPrefab; // Prefab của 1 ô UI Vật phẩm
+    [Header("Cấu Hình Thẻ Cửa Hàng (Cards)")]
+    public Transform contentArea;      
+    public GameObject shopCardPrefab;  
 
-    [Header("Danh Sách Vật Phẩm Trong Shop")]
+    [Header("Danh Sách Tháp Bày Bán")]
     public List<ShopItemData> shopItems;
 
     void Awake()
@@ -32,101 +36,108 @@ public class ShopManager : MonoBehaviour
 
     void Start()
     {
-        GenerateShopUI();
-
-        // Mặc định ẨN TAB SHOP khi mới bắt đầu game
-        if (shopPanel != null)
+        if (shopModal != null)
         {
-            shopPanel.SetActive(false);
+            shopModal.SetActive(false);
         }
+
+        if (closeButton != null)
+        {
+            closeButton.onClick.AddListener(CloseShop);
+        }
+
+        GenerateShopCards();
     }
 
-    // --- HÀM ĐÓNG / MỚ TAB SHOP UI ---
     public void OpenShop()
     {
-        if (shopPanel != null)
+        if (GameManager.Instance != null && GameManager.Instance.currentState != GameState.Pause)
         {
-            shopPanel.SetActive(true);
+            Debug.LogWarning("⚠️ Chỉ có thể mở Cửa Hàng trong giai đoạn chuẩn bị giữa các Wave!");
+            return;
+        }
+
+        if (shopModal != null)
+        {
+            shopModal.SetActive(true);
+            UpdateGoldUI(); 
         }
     }
 
     public void CloseShop()
     {
-        if (shopPanel != null)
+        if (shopModal != null)
         {
-            shopPanel.SetActive(false);
+            shopModal.SetActive(false);
         }
     }
 
-    // Tự động đẻ ra danh sách ô UI vật phẩm theo danh sách shopItems
-    public void GenerateShopUI()
+    private void UpdateGoldUI()
     {
-        if (itemContainer == null || shopItemPrefab == null) return;
+        if (currentGoldText != null && GameEconomy.Instance != null)
+        {
+            currentGoldText.text = $"Gold: {GameEconomy.Instance.gold}";
+        }
+    }
 
-        foreach (Transform child in itemContainer)
+    public void GenerateShopCards()
+    {
+        if (contentArea == null || shopCardPrefab == null) return;
+
+        foreach (Transform child in contentArea)
         {
             Destroy(child.gameObject);
         }
 
         foreach (var item in shopItems)
         {
-            GameObject itemObj = Instantiate(shopItemPrefab, itemContainer);
-            ShopItemUI itemUI = itemObj.GetComponent<ShopItemUI>();
-            if (itemUI != null)
+            GameObject cardObj = Instantiate(shopCardPrefab, contentArea);
+            
+            ShopCardUI cardUI = cardObj.GetComponent<ShopCardUI>();
+            if (cardUI != null)
             {
-                itemUI.Setup(item);
+                cardUI.Setup(item);
             }
         }
     }
 
-    // Logic xử lý Mua Vật Phẩm
     public void BuyItem(ShopItemData item)
     {
-        if (item == null || item.towerPrefab == null)
-        {
-            Debug.LogWarning("⚠️ Vật phẩm bị thiếu thông tin hoặc chưa gán Prefab tháp!");
-            return;
-        }
+        if (item == null || item.towerPrefab == null) return;
 
-        // 1. Kiểm tra 6 ô Hàng chờ (Bench) còn trống không
         if (BenchManager.Instance == null || !BenchManager.Instance.HasEmptySlot())
         {
-            Debug.LogWarning("❌ Hàng chờ (Bench) đã đầy 6/6 ô! Hãy kéo tháp ra sân hoặc gộp tháp trước.");
+            Debug.LogWarning("❌ Hàng chờ đã đầy! Hãy dọn chỗ hoặc gộp tháp trước.");
             return;
         }
 
-        // 2. Kiểm tra Vàng
         if (GameEconomy.Instance != null)
         {
             if (GameEconomy.Instance.gold < item.itemPrice)
             {
-                Debug.Log($"❌ Không đủ vàng để mua {item.itemName}! Giá: {item.itemPrice} Vàng.");
+                Debug.Log($"❌ Không đủ vàng để mua {item.itemName}! Cần: {item.itemPrice} Vàng.");
                 return;
             }
 
-            // Trừ vàng
             GameEconomy.Instance.AddGold(-item.itemPrice);
+            UpdateGoldUI(); 
         }
 
-        // 3. [MỚI FIX] ĐẺ THÁP RA SCENE (Instantiate) trước khi đẩy vào Hàng chờ
         GameObject newTower = Instantiate(item.towerPrefab);
-
-        // 4. Chuyển tháp mới sinh ra xuống Hàng chờ (BenchManager tự ép Inactive)
         bool success = BenchManager.Instance.AddTowerToBench(newTower);
 
         if (success)
         {
-            Debug.Log($"🛒 Mua thành công {item.itemName}! Đã xuất hiện dưới Hàng chờ.");
+            Debug.Log($"🛒 Mua thành công {item.itemName}!");
         }
         else
         {
-            // Trường hợp hy hữu không vào được Hàng chờ -> Xóa tháp và hoàn tiền
             Destroy(newTower);
             if (GameEconomy.Instance != null)
             {
                 GameEconomy.Instance.AddGold(item.itemPrice);
+                UpdateGoldUI(); 
             }
-            Debug.LogWarning("❌ Thất bại khi đẩy tháp vào Hàng chờ!");
         }
     }
 }

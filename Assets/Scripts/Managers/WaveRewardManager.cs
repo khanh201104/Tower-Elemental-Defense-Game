@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.UI; // Dùng cho Text và Image Legacy
+using UnityEngine.UI;
 
 [System.Serializable]
 public class BasicTowerInfo
@@ -28,18 +28,17 @@ public class WaveRewardManager : MonoBehaviour
     public Text card1Desc;
 
     [Header("UI Card 2 - Tháp Ẩn Danh + 10% Vàng")]
-    public Sprite mysteryIcon; // Icon Dấu hỏi hoặc Hộp quà bí ẩn
+    public Sprite mysteryIcon;
     public Image card2Icon;
     public Text card2Title;
     public Text card2Desc;
 
     [Header("UI Card 3 - 90% Vàng")]
-    public Sprite goldIcon;    // Icon Túi vàng
+    public Sprite goldIcon;
     public Image card3Icon;
     public Text card3Title;
     public Text card3Desc;
 
-    // Lưu lại tháp ngẫu nhiên được chọn cho Thẻ 1 của wave này
     private BasicTowerInfo selectedOption1Tower;
 
     void Awake()
@@ -56,44 +55,42 @@ public class WaveRewardManager : MonoBehaviour
         }
     }
 
-    // --- HÀM TỰ ĐỘNG BỐC THẺ VÀ HIỂN THỊ UI ---
+    // Hàm hiển thị trực tiếp khi GameManager ra lệnh
     public void ShowRewardPanel()
     {
         if (rewardPanel == null)
         {
-            Debug.LogError("❌ LỖI: Chưa kéo Panel_WaveReward vào ô 'Reward Panel' trong Inspector của WaveRewardManager!");
+            Debug.LogError("❌ LỖI: Chưa kéo Panel_WaveReward vào ô 'Reward Panel' trong Inspector!");
             return;
         }
 
         if (basicTowers == null || basicTowers.Length == 0)
         {
-            Debug.LogError("❌ LỖI: Mảng 'Basic Towers' đang rỗng (Size = 0)! Hãy nhập ít nhất 1 tháp cơ bản.");
+            Debug.LogError("❌ LỖI: Mảng 'Basic Towers' đang rỗng!");
             return;
         }
 
-        // 1. Thẻ 1: Chọn ngẫu nhiên 1 trong các tháp cơ bản và gán Icon/Tên công khai
+        // 1. Thẻ 1: Tháp ngẫu nhiên công khai
         selectedOption1Tower = basicTowers[Random.Range(0, basicTowers.Length)];
         if (card1Icon != null) card1Icon.sprite = selectedOption1Tower.towerIcon;
         if (card1Title != null) card1Title.text = selectedOption1Tower.towerName;
         if (card1Desc != null) card1Desc.text = $"Nhận ngay 1 {selectedOption1Tower.towerName} vào Hàng chờ.";
 
-        // 2. Thẻ 2: Tháp ẩn danh + 10% giá trị tháp
+        // 2. Thẻ 2: Tháp ẩn danh + 10% Vàng
         int bonusGold2 = Mathf.RoundToInt(baseTowerPrice * 0.1f);
         if (card2Icon != null && mysteryIcon != null) card2Icon.sprite = mysteryIcon;
         if (card2Title != null) card2Title.text = "Tháp Bí Ẩn";
         if (card2Desc != null) card2Desc.text = $"Nhận 1 Tháp Nguyên Tố ngẫu nhiên + {bonusGold2} Vàng.";
 
-        // 3. Thẻ 3: 90% giá trị tháp bằng Vàng
+        // 3. Thẻ 3: 90% Vàng
         int bonusGold3 = Mathf.RoundToInt(baseTowerPrice * 0.9f);
         if (card3Icon != null && goldIcon != null) card3Icon.sprite = goldIcon;
         if (card3Title != null) card3Title.text = "Túi Vàng Thưởng";
         if (card3Desc != null) card3Desc.text = $"Nhận ngay {bonusGold3} Vàng (90% giá Tháp Lv1).";
 
-        // Mở Panel
         rewardPanel.SetActive(true);
     }
 
-    // --- XỬ LÝ KHI CHỌN CARD 1 (Tháp Công Khai) ---
     public void OnSelectOption1()
     {
         if (!CheckBenchSpace()) return;
@@ -108,7 +105,6 @@ public class WaveRewardManager : MonoBehaviour
         ClosePanel();
     }
 
-    // --- XỬ LÝ KHI CHỌN CARD 2 (Tháp Ngẫu Nhiên + 10% Vàng) ---
     public void OnSelectOption2()
     {
         if (!CheckBenchSpace()) return;
@@ -130,7 +126,6 @@ public class WaveRewardManager : MonoBehaviour
         ClosePanel();
     }
 
-    // --- XỬ LÝ KHI CHỌN CARD 3 (90% Tiền Mặt) ---
     public void OnSelectOption3()
     {
         int bonusGold = Mathf.RoundToInt(baseTowerPrice * 0.9f);
@@ -158,6 +153,12 @@ public class WaveRewardManager : MonoBehaviour
         if (rewardPanel != null)
         {
             rewardPanel.SetActive(false);
+        }
+
+        // Báo cho GameManager đưa game về GameState.Pause và chạy lại thời gian bình thường
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.OnRewardClaimed();
         }
     }
 }

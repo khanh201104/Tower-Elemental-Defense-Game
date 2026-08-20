@@ -168,23 +168,17 @@ public class MergeManager : MonoBehaviour
 
         if (isOnBench)
         {
-            // A. NẾU GỘP TRÊN HÀNG CHỜ -> Ép về trạng thái INACTIVE (Mờ 50%, dừng bắn)
+            // A. NẾU GỘP TRÊN HÀNG CHỜ
             GameObject newTower = Instantiate(prefab, pos, Quaternion.identity);
 
-            // Căn thẳng vào tâm của ô Bench gần nhất
+            // [ĐÃ FIX] Gọi trực tiếp hàm AddTowerToBenchSlot để nó tự động Đăng ký mảng, Set tọa độ và Set Inactive
             if (BenchManager.Instance != null)
             {
                 int slotIdx = BenchManager.Instance.GetNearestSlotIndex(pos);
                 if (slotIdx != -1)
                 {
-                    newTower.transform.position = BenchManager.Instance.benchSlots[slotIdx].position;
+                    BenchManager.Instance.AddTowerToBenchSlot(newTower, slotIdx); 
                 }
-            }
-
-            TowerController controller = newTower.GetComponent<TowerController>();
-            if (controller != null)
-            {
-                controller.SetOperational(false); // Inactive
             }
 
             Debug.Log($"✅ Đã {debugText} thành công trên HÀNG CHỜ (Trạng thái: Inactive)!");

@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
@@ -6,7 +7,7 @@ public enum GameState
 {
     Pause,    // Trạng thái chuẩn bị giữa các Wave (TFT)
     Resume,   // Trạng thái chiến đấu (Quái đang ra)
-    Freeze,   // Trạng thái tạm dừng hệ thống (Mở Pause Menu)
+    Freeze,   // Trạng thái dừng hệ thống (Mở Pause Menu hoặc Reward)
     GameOver, // Thua
     Victory   // Thắng
 }
@@ -17,14 +18,21 @@ public class GameManager : MonoBehaviour
 
     [Header("Trạng Thái Hiện Tại")]
     public GameState currentState = GameState.Pause;
-    private GameState stateBeforeFreeze; // Ghi nhớ trạng thái trước khi bấm Pause để khôi phục
+    private GameState stateBeforeFreeze;
+
+    [Header("Cấu Hình Delay (Giây)")]
+    public float waveEndDelay = 1f; // Chờ 0.5s sau khi xong Wave
+    public float endGameDelay = 1f; // Chờ 1s cho Thắng/Thua
 
     [Header("UI Panels (Kéo thả từ Canvas vào đây)")]
     public GameObject footerPanel;      // Thanh Footer dưới
     public GameObject pauseMenuPanel;   // Bảng Menu Tạm dừng (Pause Popup)
-    public GameObject settingsPanel;     // Bảng Cài đặt (Settings Popup)
+    public GameObject settingsPanel;    // Bảng Cài đặt (Settings Popup)
     public GameObject gameOverPanel;    // Bảng Thua
     public GameObject victoryPanel;     // Bảng Thắng
+
+    private Coroutine delayRoutine;
+    private bool isEndingGame = false;
     
     void Awake()
     {
@@ -34,12 +42,25 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        Time.timeScale = 1f; // Đảm bảo thời gian luôn chạy bình thường khi load màn
+        isEndingGame = false;
+        Time.timeScale = 1f;
         SetState(GameState.Pause);
     }
 
     public void SetState(GameState newState)
     {
+        if (newState == GameState.GameOver && !isEndingGame)
+        {
+            TriggerGameOver();
+            return;
+        }
+
+        if (newState == GameState.Victory && !isEndingGame)
+        {
+            TriggerVictory();
+            return;
+        }
+
         currentState = newState;
 
         switch (currentState)
@@ -55,9 +76,7 @@ public class GameManager : MonoBehaviour
 
             case GameState.Resume:
                 Time.timeScale = 1f;
-                // SỬA DÒNG NÀY: Thay SetActive(false) thành SetActive(true)
                 if (footerPanel != null) footerPanel.SetActive(true); 
-                
                 if (pauseMenuPanel != null) pauseMenuPanel.SetActive(false);
                 if (settingsPanel != null) settingsPanel.SetActive(false);
                 
@@ -68,9 +87,7 @@ public class GameManager : MonoBehaviour
                 break;
 
             case GameState.Freeze:
-                Time.timeScale = 0f; // Đóng băng toàn bộ hoạt ảnh, đường đạn và di chuyển
-                if (pauseMenuPanel != null) pauseMenuPanel.SetActive(true);
-                if (settingsPanel != null) settingsPanel.SetActive(false);
+                Time.timeScale = 0f; // Đóng băng game
                 break;
 
             case GameState.GameOver:
@@ -78,7 +95,6 @@ public class GameManager : MonoBehaviour
                 if (footerPanel != null) footerPanel.SetActive(false);
                 if (pauseMenuPanel != null) pauseMenuPanel.SetActive(false);
                 if (gameOverPanel != null) gameOverPanel.SetActive(true);
-                
                 Time.timeScale = 0f;
                 break;
 
@@ -91,53 +107,48 @@ public class GameManager : MonoBehaviour
                 Time.timeScale = 0f;
                 break;
         }
+
         if (GameplayCanvasController.Instance != null)
         {
             GameplayCanvasController.Instance.UpdateFooterButtons(currentState);
         }
     }
 
-    // --- CÁC HÀM XỬ LÝ CHO PAUSE MENU ---
+    // --- PAUSE MENU ---
 
-    // 1. Gán vào Nút Pause góc màn hình
     public void FreezeGame()
     {
         if (currentState != GameState.Freeze)
         {
-            stateBeforeFreeze = currentState; // Lưu lại xem trước đó đang là Pause hay Resume
+            stateBeforeFreeze = currentState;
             SetState(GameState.Freeze);
+            if (pauseMenuPanel != null) pauseMenuPanel.SetActive(true);
         }
     }
 
-    // 2. Gán vào Nút "TIẾP TỤC" trong Panel Pause
     public void ResumeGame()
     {
-        if (currentState == GameState.Freeze)
-        {
-            SetState(stateBeforeFreeze); // Trả lại đúng trạng thái trước khi Pause
-        }
+        if (pauseMenuPanel != null) pauseMenuPanel.SetActive(false);
+        if (settingsPanel != null) settingsPanel.SetActive(false);
+        SetState(stateBeforeFreeze);
     }
 
-    // 3. Gán vào Nút "CÀI ĐẶT" trong Panel Pause
     public void OpenSettings()
     {
         if (settingsPanel != null) settingsPanel.SetActive(true);
     }
 
-    // 4. Gán vào Nút "QUAY LẠI" trong Panel Settings
     public void CloseSettings()
     {
         if (settingsPanel != null) settingsPanel.SetActive(false);
     }
 
-    // 5. Gán vào Nút "VỀ MENU CHÍNH" trong Panel Pause
     public void ReturnToMainMenu()
     {
-        Time.timeScale = 1f; // Luôn reset timeScale về 1 trước khi chuyển Scene
-        SceneManager.LoadScene(0); // Scene 0 là MainMenu
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(0);
     }
 
-    // 6. Gán vào Nút "THOÁT GAME" trong Panel Pause
     public void QuitGame()
     {
         Debug.Log("Đang thoát game...");
@@ -148,7 +159,39 @@ public class GameManager : MonoBehaviour
         #endif
     }
 
-    // --- HỆ THỐNG WAVE & TIẾN TRÌNH ---
+    // --- XỬ LÝ GAME OVER VÀ VICTORY ---
+
+    public void TriggerGameOver()
+    {
+        if (isEndingGame) return;
+        isEndingGame = true;
+
+        if (delayRoutine != null) StopCoroutine(delayRoutine);
+        delayRoutine = StartCoroutine(GameOverRoutine());
+    }
+
+    private IEnumerator GameOverRoutine()
+    {
+        yield return new WaitForSecondsRealtime(endGameDelay);
+        SetState(GameState.GameOver);
+    }
+
+    public void TriggerVictory()
+    {
+        if (isEndingGame) return;
+        isEndingGame = true;
+
+        if (delayRoutine != null) StopCoroutine(delayRoutine);
+        delayRoutine = StartCoroutine(VictoryRoutine());
+    }
+
+    private IEnumerator VictoryRoutine()
+    {
+        yield return new WaitForSecondsRealtime(endGameDelay);
+        SetState(GameState.Victory);
+    }
+
+    // --- HỆ THỐNG WAVE ---
 
     private void HealAllTowers()
     {
@@ -156,8 +199,8 @@ public class GameManager : MonoBehaviour
         foreach (TowerHealth tower in allTowers)
         {
             tower.HealToFull();
-            Debug.Log("Đã hồi phục cho toàn bộ tháp");
         }
+        Debug.Log("Đã hồi phục cho toàn bộ tháp");
     }
 
     public void OnClickStartWaveButton()
@@ -210,27 +253,39 @@ public class GameManager : MonoBehaviour
     }
     
     public void RegisterUIPanels(GameObject footer, GameObject pauseMenu, GameObject settings, GameObject gameOver, GameObject victory, Text levelTitle = null)
-{
-    footerPanel = footer;
-    pauseMenuPanel = pauseMenu;
-    settingsPanel = settings;
-    gameOverPanel = gameOver;
-    victoryPanel = victory;
-    
-    SetState(GameState.Pause);
-}
-public void OnWaveCompleted()
     {
-        // 1. Hồi máu toàn bộ tháp
-        HealAllTowers();
+        footerPanel = footer;
+        pauseMenuPanel = pauseMenu;
+        settingsPanel = settings;
+        gameOverPanel = gameOver;
+        victoryPanel = victory;
+        
+        SetState(GameState.Pause);
+    }
 
-        // 2. Mở bảng chọn phần thưởng
+    // Xử lý khi hoàn thành Wave: Delay 0.5s -> Freeze -> Bật Reward
+    public void OnWaveCompleted()
+    {
+        if (delayRoutine != null) StopCoroutine(delayRoutine);
+        delayRoutine = StartCoroutine(WaveCompletedRoutine());
+    }
+
+    private IEnumerator WaveCompletedRoutine()
+    {
+        // Chờ 0.5s theo thời gian thực để hoàn tất hiệu ứng tiêu diệt quái cuối
+        yield return new WaitForSecondsRealtime(waveEndDelay);
+
+        HealAllTowers();
+        SetState(GameState.Freeze);
+
         if (WaveRewardManager.Instance != null)
         {
             WaveRewardManager.Instance.ShowRewardPanel();
         }
+    }
 
-        // 3. Đưa game về trạng thái Pause (Chuẩn bị)
+    public void OnRewardClaimed()
+    {
         SetState(GameState.Pause);
     }
 }
