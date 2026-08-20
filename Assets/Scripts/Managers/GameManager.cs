@@ -91,7 +91,6 @@ public class GameManager : MonoBehaviour
                 break;
 
             case GameState.GameOver:
-                Debug.Log("💀 GAME OVER: Nhà chính đã bị phá hủy!");
                 if (footerPanel != null) footerPanel.SetActive(false);
                 if (pauseMenuPanel != null) pauseMenuPanel.SetActive(false);
                 if (gameOverPanel != null) gameOverPanel.SetActive(true);
@@ -99,7 +98,6 @@ public class GameManager : MonoBehaviour
                 break;
 
             case GameState.Victory:
-                Debug.Log("🎉 VICTORY: Đã dọn sạch toàn bộ các Wave!");
                 if (footerPanel != null) footerPanel.SetActive(false);
                 if (pauseMenuPanel != null) pauseMenuPanel.SetActive(false);
                 if (victoryPanel != null) victoryPanel.SetActive(true);
@@ -151,7 +149,6 @@ public class GameManager : MonoBehaviour
 
     public void QuitGame()
     {
-        Debug.Log("Đang thoát game...");
         Application.Quit();
 
         #if UNITY_EDITOR
@@ -200,7 +197,6 @@ public class GameManager : MonoBehaviour
         {
             tower.HealToFull();
         }
-        Debug.Log("Đã hồi phục cho toàn bộ tháp");
     }
 
     public void OnClickStartWaveButton()
@@ -234,7 +230,6 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            Debug.Log("🏆 Bạn đã phá đảo toàn bộ các Map!");
             SceneManager.LoadScene(0);
         }
     }
@@ -248,7 +243,6 @@ public class GameManager : MonoBehaviour
         {
             PlayerPrefs.SetInt("HighestUnlockedLevel", currentSceneIndex + 1);
             PlayerPrefs.Save();
-            Debug.Log($"💾 Đã mở khóa Màn tiếp theo: {currentSceneIndex + 1}");
         }
     }
     
