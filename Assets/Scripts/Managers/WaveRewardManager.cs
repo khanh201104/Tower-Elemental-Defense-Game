@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro; // Bổ sung thư viện TextMeshPro
 
 [System.Serializable]
 public class BasicTowerInfo
@@ -24,20 +25,20 @@ public class WaveRewardManager : MonoBehaviour
 
     [Header("UI Card 1 - Tháp Công Khai")]
     public Image card1Icon;
-    public Text card1Title;
-    public Text card1Desc;
+    public TextMeshProUGUI card1Title; // Đổi sang TextMeshProUGUI
+    public TextMeshProUGUI card1Desc;  // Đổi sang TextMeshProUGUI
 
     [Header("UI Card 2 - Tháp Ẩn Danh + 10% Vàng")]
     public Sprite mysteryIcon;
     public Image card2Icon;
-    public Text card2Title;
-    public Text card2Desc;
+    public TextMeshProUGUI card2Title; // Đổi sang TextMeshProUGUI
+    public TextMeshProUGUI card2Desc;  // Đổi sang TextMeshProUGUI
 
     [Header("UI Card 3 - 90% Vàng")]
     public Sprite goldIcon;
     public Image card3Icon;
-    public Text card3Title;
-    public Text card3Desc;
+    public TextMeshProUGUI card3Title; // Đổi sang TextMeshProUGUI
+    public TextMeshProUGUI card3Desc;  // Đổi sang TextMeshProUGUI
 
     private BasicTowerInfo selectedOption1Tower;
 
