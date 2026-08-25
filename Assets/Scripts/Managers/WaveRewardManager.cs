@@ -80,13 +80,13 @@ public class WaveRewardManager : MonoBehaviour
         // 2. Thẻ 2: Tháp ẩn danh + 10% Vàng
         int bonusGold2 = Mathf.RoundToInt(baseTowerPrice * 0.1f);
         if (card2Icon != null && mysteryIcon != null) card2Icon.sprite = mysteryIcon;
-        if (card2Title != null) card2Title.text = "Tháp Bí Ẩn";
+        if (card2Title != null) card2Title.text = "Mystery Tower";
         if (card2Desc != null) card2Desc.text = $"Nhận 1 Tháp Nguyên Tố ngẫu nhiên + {bonusGold2} Vàng.";
 
         // 3. Thẻ 3: 90% Vàng
         int bonusGold3 = Mathf.RoundToInt(baseTowerPrice * 0.9f);
         if (card3Icon != null && goldIcon != null) card3Icon.sprite = goldIcon;
-        if (card3Title != null) card3Title.text = "Túi Vàng Thưởng";
+        if (card3Title != null) card3Title.text = "Earn Gold";
         if (card3Desc != null) card3Desc.text = $"Nhận ngay {bonusGold3} Vàng (90% giá Tháp Lv1).";
 
         rewardPanel.SetActive(true);
@@ -94,6 +94,7 @@ public class WaveRewardManager : MonoBehaviour
 
     public void OnSelectOption1()
     {
+        if (AudioManager.Instance != null) AudioManager.Instance.PlayButtonClick();
         if (!CheckBenchSpace()) return;
 
         if (selectedOption1Tower != null && selectedOption1Tower.towerPrefab != null)
@@ -108,6 +109,7 @@ public class WaveRewardManager : MonoBehaviour
 
     public void OnSelectOption2()
     {
+        if (AudioManager.Instance != null) AudioManager.Instance.PlayButtonClick();
         if (!CheckBenchSpace()) return;
 
         BasicTowerInfo randomTower = basicTowers[Random.Range(0, basicTowers.Length)];
@@ -129,6 +131,7 @@ public class WaveRewardManager : MonoBehaviour
 
     public void OnSelectOption3()
     {
+        if (AudioManager.Instance != null) AudioManager.Instance.PlayButtonClick();
         int bonusGold = Mathf.RoundToInt(baseTowerPrice * 0.9f);
         if (GameEconomy.Instance != null)
         {

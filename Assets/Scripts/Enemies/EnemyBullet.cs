@@ -37,6 +37,7 @@ public class EnemyBullet : MonoBehaviour
     {
         if (targetTower != null)
         {
+            if (AudioManager.Instance != null) AudioManager.Instance.PlayEnemyBulletHit();
             // 1. Thử tìm Component Máu của Tháp
             TowerHealth tHealth = targetTower.GetComponent<TowerHealth>();
             if (tHealth != null)

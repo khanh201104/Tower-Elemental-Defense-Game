@@ -124,49 +124,95 @@ public class GameplayCanvasController : MonoBehaviour
     // --- GẮN SỰ KIỆN BUTTON ---
     private void SetupButtonListeners()
     {
+        UnityEngine.Events.UnityAction playClick = () => 
+        { 
+            if (AudioManager.Instance != null) AudioManager.Instance.PlayButtonClick(); 
+        };
         if (toggleRangeButton != null)
+        {
+            toggleRangeButton.onClick.AddListener(playClick);
             toggleRangeButton.onClick.AddListener(ToggleAllTowerRanges);
+        }
 
         if (pauseButton != null)
+        {
+            pauseButton.onClick.AddListener(playClick);
             pauseButton.onClick.AddListener(() => GameManager.Instance?.FreezeGame());
+        }
 
         if (nextWaveButton != null)
+        {
+            nextWaveButton.onClick.AddListener(playClick);
             nextWaveButton.onClick.AddListener(() => GameManager.Instance?.OnClickStartWaveButton());
+        }
 
         if (shopButton != null)
+        {
+            shopButton.onClick.AddListener(playClick); // Code cũ mở shop đã có nhạc ở ShopManager, nhưng nếu bạn quen bấm ở đây thì cứ để
             shopButton.onClick.AddListener(() => ShopManager.Instance?.OpenShop());
+        }
 
         if (resumeButton != null)
+        {
+            resumeButton.onClick.AddListener(playClick);
             resumeButton.onClick.AddListener(() => GameManager.Instance?.ResumeGame());
+        }
 
         if (settingsButton != null)
+        {
+            settingsButton.onClick.AddListener(playClick);
             settingsButton.onClick.AddListener(() => GameManager.Instance?.OpenSettings());
+        }
 
         if (closeSettingsButton != null)
+        {
+            closeSettingsButton.onClick.AddListener(playClick);
             closeSettingsButton.onClick.AddListener(() => GameManager.Instance?.CloseSettings());
+        }
 
         if (mainMenuButton != null)
+        {
+            mainMenuButton.onClick.AddListener(playClick);
             mainMenuButton.onClick.AddListener(() => GameManager.Instance?.ReturnToMainMenu());
+        }
 
         if (quitButton != null)
+        {
+            quitButton.onClick.AddListener(playClick);
             quitButton.onClick.AddListener(() => GameManager.Instance?.QuitGame());
+        }
 
         if (restartButtonGameOver != null)
+        {
+            restartButtonGameOver.onClick.AddListener(playClick);
             restartButtonGameOver.onClick.AddListener(() => GameManager.Instance?.RestartGame());
+        }
 
         if (restartButtonVictory != null)
+        {
+            restartButtonVictory.onClick.AddListener(playClick);
             restartButtonVictory.onClick.AddListener(() => GameManager.Instance?.RestartGame());
+        }
 
         if (nextLevelButton != null)
+        {
+            nextLevelButton.onClick.AddListener(playClick);
             nextLevelButton.onClick.AddListener(() => GameManager.Instance?.NextLevel());
+        }
 
         if (mainMenuButtonGameOver != null)
+        {
+            mainMenuButtonGameOver.onClick.AddListener(playClick);
             mainMenuButtonGameOver.onClick.AddListener(() => GameManager.Instance?.ReturnToMainMenu());
+        }
 
         if (mainMenuButtonVictory != null)
+        {
+            mainMenuButtonVictory.onClick.AddListener(playClick);
             mainMenuButtonVictory.onClick.AddListener(() => GameManager.Instance?.ReturnToMainMenu());
+        }
     }
-    private void ToggleAllTowerRanges()
+        private void ToggleAllTowerRanges()
     {
         IsGlobalRangeVisible = !IsGlobalRangeVisible; // Đảo trạng thái
 

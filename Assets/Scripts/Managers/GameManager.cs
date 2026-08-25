@@ -42,6 +42,7 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        if (AudioManager.Instance != null) AudioManager.Instance.PlayGameplayBGM();
         isEndingGame = false;
         Time.timeScale = 1f;
         SetState(GameState.Pause);
@@ -172,6 +173,11 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator GameOverRoutine()
     {
+        if (AudioManager.Instance != null) 
+        {
+            AudioManager.Instance.StopBGM();
+            AudioManager.Instance.PlayGameOver();
+        }
         yield return new WaitForSecondsRealtime(endGameDelay);
         SetState(GameState.GameOver);
     }
@@ -187,6 +193,11 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator VictoryRoutine()
     {
+        if (AudioManager.Instance != null) 
+        {
+            AudioManager.Instance.StopBGM();
+            AudioManager.Instance.PlayVictory();
+        }
         yield return new WaitForSecondsRealtime(endGameDelay);
         SetState(GameState.Victory);
     }

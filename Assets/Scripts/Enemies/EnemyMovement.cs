@@ -25,14 +25,13 @@ public class EnemyMovement : MonoBehaviour
     private Transform currentTargetTower;
 
     private SpriteRenderer spriteRenderer;
-    private EnemyAnimation enemyAnimation; // Tham chiếu Animation
+    private EnemyAnimation enemyAnimation; 
 
-    void Start()
+    // --- MẢNG LƯU TRỮ ĐƯỜNG ĐI RIÊNG CỦA TỪNG CON QUÁI ---
+    private Vector3[] myPath; 
+
+    void Awake()
     {
-        currentSpeed = baseSpeed;
-        spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-        enemyAnimation = GetComponent<EnemyAnimation>();
-
         GameObject pathGO = GameObject.Find("Path");
         if (pathGO != null)
         {
@@ -43,6 +42,63 @@ public class EnemyMovement : MonoBehaviour
                 waypoints[i] = pathFolder.GetChild(i);
             }
         }
+    }
+
+    void Start()
+    {
+        currentSpeed = baseSpeed;
+        spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        enemyAnimation = GetComponent<EnemyAnimation>();
+    }
+
+    // --- HÀM TẠO SẴN ĐƯỜNG ĐI SONG SONG (LANE) ---
+    public void InitializePathOffset(float offset, Vector3 spawnPos)
+    {
+        if (waypoints == null || waypoints.Length == 0) return;
+
+        myPath = new Vector3[waypoints.Length];
+
+        for (int i = 0; i < waypoints.Length; i++)
+        {
+            Vector3 currentPoint = waypoints[i].position;
+            Vector3 dirIn = Vector3.zero;
+            Vector3 dirOut = Vector3.zero;
+
+            // Lấy hướng đi vào và đi ra khỏi mốc waypoint hiện tại
+            if (i > 0) dirIn = (currentPoint - waypoints[i - 1].position).normalized;
+            if (i < waypoints.Length - 1) dirOut = (waypoints[i + 1].position - currentPoint).normalized;
+
+            if (i == 0) // Điểm đầu
+            {
+                Vector3 perp = new Vector3(-dirOut.y, dirOut.x, 0);
+                myPath[i] = currentPoint + perp * offset;
+            }
+            else if (i == waypoints.Length - 1) // Điểm cuối
+            {
+                Vector3 perp = new Vector3(-dirIn.y, dirIn.x, 0);
+                myPath[i] = currentPoint + perp * offset;
+            }
+            else
+            {
+                // Nếu là đường thẳng (Góc giữa 2 vector = 0)
+                if (Vector3.Dot(dirIn, dirOut) > 0.99f) 
+                {
+                    Vector3 perp = new Vector3(-dirIn.y, dirIn.x, 0);
+                    myPath[i] = currentPoint + perp * offset;
+                }
+                else // Khúc cua 90 độ -> Tìm điểm giao cắt của 2 đường vuông góc để quái ôm cua chính xác
+                {
+                    Vector3 perpIn = new Vector3(-dirIn.y, dirIn.x, 0);
+                    Vector3 perpOut = new Vector3(-dirOut.y, dirOut.x, 0);
+                    myPath[i] = currentPoint + (perpIn + perpOut) * offset;
+                }
+            }
+        }
+
+        // Đẩy vị trí spawn ban đầu ra đúng làn
+        Vector3 startDir = (waypoints.Length > 1) ? (waypoints[1].position - waypoints[0].position).normalized : Vector3.right;
+        Vector3 startPerp = new Vector3(-startDir.y, startDir.x, 0);
+        transform.position = spawnPos + startPerp * offset;
     }
 
     void Update()
@@ -57,14 +113,10 @@ public class EnemyMovement : MonoBehaviour
             }
         }
 
-        if (attackTimer > 0)
-        {
-            attackTimer -= Time.deltaTime;
-        }
+        if (attackTimer > 0) attackTimer -= Time.deltaTime;
 
         FindTarget();
 
-        // 1. Nếu có Tháp trong tầm đánh -> Dừng lại và Đánh
         if (currentTargetTower != null)
         {
             if (enemyAnimation != null) enemyAnimation.SetAttacking(true);
@@ -75,13 +127,11 @@ public class EnemyMovement : MonoBehaviour
                 attackTimer = attackCooldown;
             }
         }
-        // 2. Nếu chưa tới cuối đường -> Đi bộ theo Waypoint
-        else if (waypoints != null && targetIndex < waypoints.Length)
+        else if (myPath != null && targetIndex < myPath.Length) // Kiểm tra mảng myPath
         {
             if (enemyAnimation != null) enemyAnimation.SetAttacking(false);
             MoveAlongPath();
         }
-        // 3. Nếu đã tới cuối đường -> Đánh Nhà chính
         else
         {
             if (enemyAnimation != null) enemyAnimation.SetAttacking(true);
@@ -105,10 +155,7 @@ public class EnemyMovement : MonoBehaviour
             if (hit.CompareTag("Tower"))
             {
                 TowerController towerCtrl = hit.GetComponent<TowerController>();
-                if (towerCtrl != null && !towerCtrl.isOperational)
-                {
-                    continue; 
-                }
+                if (towerCtrl != null && !towerCtrl.isOperational) continue; 
 
                 float distanceToTower = Vector2.Distance(transform.position, hit.transform.position);
                 if (distanceToTower < shortestDistance)
@@ -118,7 +165,6 @@ public class EnemyMovement : MonoBehaviour
                 }
             }
         }
-
         currentTargetTower = nearestTower;
     }
 
@@ -128,22 +174,17 @@ public class EnemyMovement : MonoBehaviour
 
         if (bulletPrefab != null)
         {
+            if (AudioManager.Instance != null) AudioManager.Instance.PlayEnemyShoot();
             Vector3 spawnPos = firePoint != null ? firePoint.position : transform.position;
             GameObject bulletGO = Instantiate(bulletPrefab, spawnPos, Quaternion.identity);
             EnemyBullet bulletScript = bulletGO.GetComponent<EnemyBullet>();
-
-            if (bulletScript != null)
-            {
-                bulletScript.Seek(currentTargetTower, damage);
-            }
+            if (bulletScript != null) bulletScript.Seek(currentTargetTower, damage);
         }
         else
         {
+            if (AudioManager.Instance != null) AudioManager.Instance.PlayEnemyMelee();
             TowerHealth tHealth = currentTargetTower.GetComponent<TowerHealth>();
-            if (tHealth != null)
-            {
-                tHealth.TakeDamage(damage);
-            }
+            if (tHealth != null) tHealth.TakeDamage(damage);
         }
     }
 
@@ -153,30 +194,27 @@ public class EnemyMovement : MonoBehaviour
 
         if (bulletPrefab != null)
         {
+            if (AudioManager.Instance != null) AudioManager.Instance.PlayEnemyShoot();
             Vector3 spawnPos = firePoint != null ? firePoint.position : transform.position;
             GameObject bulletGO = Instantiate(bulletPrefab, spawnPos, Quaternion.identity);
             EnemyBullet bulletScript = bulletGO.GetComponent<EnemyBullet>();
-
-            if (bulletScript != null)
-            {
-                bulletScript.Seek(BaseHealth.Instance.transform, damage);
-            }
+            if (bulletScript != null) bulletScript.Seek(BaseHealth.Instance.transform, damage);
         }
         else
         {
+            if (AudioManager.Instance != null) AudioManager.Instance.PlayEnemyMelee();
             BaseHealth.Instance.TakeDamage(damage);
         }
     }
 
+    // --- DI CHUYỂN BÁM THEO PATH ĐÃ ĐƯỢC TÍNH SẴN ---
     void MoveAlongPath()
     {
-        if (waypoints == null || waypoints.Length == 0) return;
-
-        Transform targetPoint = waypoints[targetIndex];
+        Vector3 targetPos = myPath[targetIndex];
 
         if (spriteRenderer != null)
         {
-            float directionX = targetPoint.position.x - transform.position.x;
+            float directionX = targetPos.x - transform.position.x;
             if (directionX > 0.1f)
             {
                 if (enemyAnimation != null) enemyAnimation.FlipSprite(true);
@@ -189,9 +227,9 @@ public class EnemyMovement : MonoBehaviour
             }
         }
 
-        transform.position = Vector3.MoveTowards(transform.position, targetPoint.position, currentSpeed * Time.deltaTime);
+        transform.position = Vector3.MoveTowards(transform.position, targetPos, currentSpeed * Time.deltaTime);
 
-        if (Vector3.Distance(transform.position, targetPoint.position) < 0.1f)
+        if (Vector3.Distance(transform.position, targetPos) < 0.05f)
         {
             targetIndex++;
         }
@@ -204,7 +242,6 @@ public class EnemyMovement : MonoBehaviour
             currentSlowPercent = slowPercentage;
             currentSpeed = baseSpeed * (1f - slowPercentage);
         }
-
         slowTimer = duration;
     }
 

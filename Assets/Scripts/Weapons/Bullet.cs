@@ -70,6 +70,7 @@ public class Bullet : MonoBehaviour
 
     void HitTarget()
     {
+        if (AudioManager.Instance != null) AudioManager.Instance.PlayBulletHit();
         // 1. SINH VFX VỤ NỔ
         if (explosionVFX != null)
 {

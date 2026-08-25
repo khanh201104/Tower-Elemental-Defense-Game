@@ -199,10 +199,18 @@ public class WaveSpawner : MonoBehaviour
     {
         for (int i = 0; i < group.count; i++)
         {
-            Vector3 randomOffset = new Vector3(Random.Range(-0.3f, 0.3f), Random.Range(-0.3f, 0.3f), 0);
-            Vector3 finalSpawnPos = spawnPoint.position + randomOffset;
+            // --- SỬA Ở ĐÂY: Không random nữa, chia chẵn lẻ để đi 2 hàng ---
+            // NẾU GẠCH CỦA BẠN TO/NHỎ HƠN, hãy chỉnh số 0.5f này cho khớp nhé!
+            float laneOffset = (i % 2 == 0) ? -0.5f : 0.5f; 
 
-            GameObject enemy = Instantiate(group.enemyPrefab, finalSpawnPos, Quaternion.identity);
+            GameObject enemy = Instantiate(group.enemyPrefab, spawnPoint.position, Quaternion.identity);
+
+            // Gửi độ lệch cho quái
+            EnemyMovement movementScript = enemy.GetComponent<EnemyMovement>();
+            if (movementScript != null)
+            {
+                movementScript.InitializePathOffset(laneOffset, spawnPoint.position);
+            }
 
             // Nâng máu quái theo Level nếu chọn AutoScale
             if (difficultyMode == DifficultyMode.AutoScale && currentLevel > 1)

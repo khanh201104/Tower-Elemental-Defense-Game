@@ -151,13 +151,13 @@ MonoBehaviour:
   rewardPanel: {fileID: 936192636719026338}
   baseTowerPrice: 50
   basicTowers:
-  - towerName: "Th\xE1p L\u1EEDa Lv1"
+  - towerName: Fire Tower Lv1
     towerIcon: {fileID: 21300000, guid: 23c4f2aa1770d134a82bf55d4dcd93bf, type: 3}
     towerPrefab: {fileID: 5620580406772248784, guid: 9d6db4d381b63374eb2a67d164f71591, type: 3}
-  - towerName: "Th\xE1p N\u01B0\u1EDBc Lv1"
+  - towerName: Water Tower Lv1
     towerIcon: {fileID: 21300000, guid: 663b47a2e08e293468d00d5ad127d7e4, type: 3}
     towerPrefab: {fileID: 5620580406772248784, guid: 8061c9c9afecbb34eb84e3992629de01, type: 3}
-  - towerName: "Th\xE1p \u0110\u1EA5t Lv1"
+  - towerName: Earth Tower Lv1
     towerIcon: {fileID: 21300000, guid: 1dd74275652b6b64a87f0e5ff5bf09ac, type: 3}
     towerPrefab: {fileID: 5620580406772248784, guid: f0883e2361767254e8f7059e22df639a, type: 3}
   card1Icon: {fileID: 936192636719026337}
@@ -767,7 +767,7 @@ MonoBehaviour:
   waveEndDelay: 1
   endGameDelay: 1
   footerPanel: {fileID: 1904807190}
-  pauseMenuPanel: {fileID: 0}
+  pauseMenuPanel: {fileID: 944947400}
   settingsPanel: {fileID: 2049704772}
   gameOverPanel: {fileID: 1292342336}
   victoryPanel: {fileID: 59780876}
@@ -796,7 +796,7 @@ Transform:
   m_GameObject: {fileID: 853753502}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.47, y: -2.62, z: 0}
+  m_LocalPosition: {x: -3.97, y: -2.07, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -873,7 +873,7 @@ Transform:
   m_GameObject: {fileID: 937930884}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -6.54, y: 1.38, z: 0}
+  m_LocalPosition: {x: -6.54, y: 0.97, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -882,6 +882,11 @@ Transform:
 --- !u!1 &942396935 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7525226424886977832, guid: 6b32ab38f33c0f344943c13a71551391, type: 3}
+  m_PrefabInstance: {fileID: 936192636719026328}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &944947400 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2635657129456316244, guid: 6b32ab38f33c0f344943c13a71551391, type: 3}
   m_PrefabInstance: {fileID: 936192636719026328}
   m_PrefabAsset: {fileID: 0}
 --- !u!114 &1012521004 stripped
@@ -920,7 +925,7 @@ Transform:
   m_GameObject: {fileID: 1065229631}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.55, y: -4.51, z: 0}
+  m_LocalPosition: {x: 2.09, y: -4.03, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1013,7 +1018,7 @@ Transform:
   m_GameObject: {fileID: 1209229018}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.58, y: -2.61, z: 0}
+  m_LocalPosition: {x: 2.06, y: -2.04, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3171,7 +3176,7 @@ Transform:
   m_GameObject: {fileID: 1689425072}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 8.7, y: -4.48, z: 0}
+  m_LocalPosition: {x: 8.52, y: -4.02, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3433,7 +3438,7 @@ Transform:
   m_GameObject: {fileID: 2025835849}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.33, y: 1.36, z: 0}
+  m_LocalPosition: {x: -3.97, y: 0.97, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

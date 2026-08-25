@@ -51,6 +51,7 @@ public class ShopManager : MonoBehaviour
 
     public void OpenShop()
     {
+        if (AudioManager.Instance != null) AudioManager.Instance.PlayButtonClick();
         if (GameManager.Instance != null && GameManager.Instance.currentState != GameState.Pause)
         {
             Debug.LogWarning("⚠️ Chỉ có thể mở Cửa Hàng trong giai đoạn chuẩn bị giữa các Wave!");
@@ -66,6 +67,7 @@ public class ShopManager : MonoBehaviour
 
     public void CloseShop()
     {
+        if (AudioManager.Instance != null) AudioManager.Instance.PlayButtonClick();
         if (shopModal != null)
         {
             shopModal.SetActive(false);
@@ -103,6 +105,7 @@ public class ShopManager : MonoBehaviour
 
     public void BuyItem(ShopItemData item)
     {
+        if (AudioManager.Instance != null) AudioManager.Instance.PlayButtonClick();
         if (item == null || item.towerPrefab == null) return;
 
         if (BenchManager.Instance == null || !BenchManager.Instance.HasEmptySlot())

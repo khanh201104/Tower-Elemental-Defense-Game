@@ -151,13 +151,13 @@ MonoBehaviour:
   rewardPanel: {fileID: 831436834}
   baseTowerPrice: 50
   basicTowers:
-  - towerName: "Th\xE1p L\u1EEDa Lv1"
+  - towerName: Fire Tower Lv1
     towerIcon: {fileID: 21300000, guid: 23c4f2aa1770d134a82bf55d4dcd93bf, type: 3}
     towerPrefab: {fileID: 5620580406772248784, guid: 9d6db4d381b63374eb2a67d164f71591, type: 3}
-  - towerName: "Th\xE1p N\u01B0\u1EDBc Lv1"
+  - towerName: Water Tower Lv1
     towerIcon: {fileID: 21300000, guid: 663b47a2e08e293468d00d5ad127d7e4, type: 3}
     towerPrefab: {fileID: 5620580406772248784, guid: 8061c9c9afecbb34eb84e3992629de01, type: 3}
-  - towerName: "Th\xE1p \u0110\u1EA5t Lv1"
+  - towerName: Earth Tower Lv1
     towerIcon: {fileID: 21300000, guid: 1dd74275652b6b64a87f0e5ff5bf09ac, type: 3}
     towerPrefab: {fileID: 5620580406772248784, guid: f0883e2361767254e8f7059e22df639a, type: 3}
   card1Icon: {fileID: 936192636719026337}
@@ -235,6 +235,11 @@ MonoBehaviour:
   towerPrefab: {fileID: 5620580406772248784, guid: 9d6db4d381b63374eb2a67d164f71591, type: 3}
   towerCost: 50
   shopSpawnPoint: {fileID: 1604147612}
+--- !u!1 &44996339 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2635657129456316244, guid: 6b32ab38f33c0f344943c13a71551391, type: 3}
+  m_PrefabInstance: {fileID: 936192636719026328}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &59780876 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5196414710053205209, guid: 6b32ab38f33c0f344943c13a71551391, type: 3}
@@ -783,8 +788,8 @@ MonoBehaviour:
   waveEndDelay: 1
   endGameDelay: 1
   footerPanel: {fileID: 1904807190}
-  pauseMenuPanel: {fileID: 0}
-  settingsPanel: {fileID: 0}
+  pauseMenuPanel: {fileID: 44996339}
+  settingsPanel: {fileID: 1713360452}
   gameOverPanel: {fileID: 1292342336}
   victoryPanel: {fileID: 59780876}
 --- !u!1 &831436834 stripped
@@ -817,7 +822,7 @@ Transform:
   m_GameObject: {fileID: 853753502}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.58, y: -4.59, z: 0}
+  m_LocalPosition: {x: 3.07, y: -4.08, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -894,7 +899,7 @@ Transform:
   m_GameObject: {fileID: 937930884}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 10.57, y: 0.47, z: 0}
+  m_LocalPosition: {x: 10.57, y: 0.96, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -936,7 +941,7 @@ Transform:
   m_GameObject: {fileID: 1065229631}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.72, y: -4.55, z: 0}
+  m_LocalPosition: {x: -3.72, y: -4.06, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1018,7 +1023,7 @@ Transform:
   m_GameObject: {fileID: 1209229018}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.48, y: -4.59, z: 0}
+  m_LocalPosition: {x: -2.59, y: -4.04, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3189,6 +3194,11 @@ Transform:
   - {fileID: 1065229632}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1713360452 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9047346063303857503, guid: 6b32ab38f33c0f344943c13a71551391, type: 3}
+  m_PrefabInstance: {fileID: 936192636719026328}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1722547548
 GameObject:
   m_ObjectHideFlags: 0
@@ -3413,7 +3423,7 @@ Transform:
   m_GameObject: {fileID: 2025835849}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.48, y: 0.46, z: 0}
+  m_LocalPosition: {x: 3.03, y: 0.97, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

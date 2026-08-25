@@ -19,6 +19,7 @@ public class MainMenuManager : MonoBehaviour
 
     void Start()
     {
+        if (AudioManager.Instance != null) AudioManager.Instance.PlayMainMenuBGM();
         Time.timeScale = 1f;
 
         // 1. Lấy tiến trình cao nhất (Mặc định là 1 nếu là người mới)
@@ -65,6 +66,7 @@ public class MainMenuManager : MonoBehaviour
     // 1. CHƠI MỚI: Luôn tải Màn 1
     public void OnNewGameClicked()
     {
+        if (AudioManager.Instance != null) AudioManager.Instance.PlayButtonClick();
         // Có thể reset lại tiến trình nếu muốn, hoặc chơi thẳng Màn 1
         SceneManager.LoadScene(1); // Tải Map_1.1 (Scene Index 1)
     }
@@ -72,6 +74,7 @@ public class MainMenuManager : MonoBehaviour
     // 2. TIẾP TỤC: Mở Bảng Chọn Màn để người chơi chọn màn đã mở
     public void OnContinueClicked()
     {
+        if (AudioManager.Instance != null) AudioManager.Instance.PlayButtonClick();
         if (levelSelectPanel != null)
         {
             levelSelectPanel.SetActive(true);
@@ -87,6 +90,7 @@ public class MainMenuManager : MonoBehaviour
     // 3. CÀI ĐẶT: Mở Bảng Cài đặt
     public void OnSettingsClicked()
     {
+        if (AudioManager.Instance != null) AudioManager.Instance.PlayButtonClick();
         if (settingsPanel != null)
         {
             settingsPanel.SetActive(true);
@@ -96,6 +100,7 @@ public class MainMenuManager : MonoBehaviour
     // Đóng các popup để quay về Menu chính
     public void OnClosePopupClicked()
     {
+        if (AudioManager.Instance != null) AudioManager.Instance.PlayButtonClick();
         if (levelSelectPanel != null) levelSelectPanel.SetActive(false);
         if (settingsPanel != null) settingsPanel.SetActive(false);
     }
@@ -103,6 +108,7 @@ public class MainMenuManager : MonoBehaviour
     // 4. THOÁT GAME
     public void OnQuitGameClicked()
     {
+        if (AudioManager.Instance != null) AudioManager.Instance.PlayButtonClick();
         Debug.Log("Đang thoát game...");
         Application.Quit();
 

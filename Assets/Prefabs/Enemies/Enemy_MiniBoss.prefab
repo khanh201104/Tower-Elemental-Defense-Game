@@ -202,7 +202,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMovement
   baseSpeed: 6
-  attackRange: 1
+  attackRange: 0.8
   damage: 3
   attackCooldown: 1
   bulletPrefab: {fileID: 0}
