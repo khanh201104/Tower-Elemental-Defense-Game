@@ -23,7 +23,7 @@ public class MainMenuManager : MonoBehaviour
         Time.timeScale = 1f;
 
         // 1. Lấy tiến trình cao nhất (Mặc định là 1 nếu là người mới)
-        int highestUnlocked = PlayerPrefs.GetInt("HighestUnlockedLevel", 1);
+        int highestUnlocked = SaveManager.Instance.data.highestUnlockedLevel;
 
         // 2. Nút "Tiếp tục" chỉ mở khi đã vượt qua ít nhất màn 1 (highest >= 2)
         if (continueButton != null)

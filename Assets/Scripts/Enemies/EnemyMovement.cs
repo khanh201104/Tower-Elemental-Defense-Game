@@ -64,29 +64,27 @@ public class EnemyMovement : MonoBehaviour
             Vector3 dirIn = Vector3.zero;
             Vector3 dirOut = Vector3.zero;
 
-            // Lấy hướng đi vào và đi ra khỏi mốc waypoint hiện tại
             if (i > 0) dirIn = (currentPoint - waypoints[i - 1].position).normalized;
             if (i < waypoints.Length - 1) dirOut = (waypoints[i + 1].position - currentPoint).normalized;
 
-            if (i == 0) // Điểm đầu
+            if (i == 0) 
             {
                 Vector3 perp = new Vector3(-dirOut.y, dirOut.x, 0);
                 myPath[i] = currentPoint + perp * offset;
             }
-            else if (i == waypoints.Length - 1) // Điểm cuối
+            else if (i == waypoints.Length - 1) 
             {
                 Vector3 perp = new Vector3(-dirIn.y, dirIn.x, 0);
                 myPath[i] = currentPoint + perp * offset;
             }
             else
             {
-                // Nếu là đường thẳng (Góc giữa 2 vector = 0)
                 if (Vector3.Dot(dirIn, dirOut) > 0.99f) 
                 {
                     Vector3 perp = new Vector3(-dirIn.y, dirIn.x, 0);
                     myPath[i] = currentPoint + perp * offset;
                 }
-                else // Khúc cua 90 độ -> Tìm điểm giao cắt của 2 đường vuông góc để quái ôm cua chính xác
+                else 
                 {
                     Vector3 perpIn = new Vector3(-dirIn.y, dirIn.x, 0);
                     Vector3 perpOut = new Vector3(-dirOut.y, dirOut.x, 0);
@@ -95,7 +93,6 @@ public class EnemyMovement : MonoBehaviour
             }
         }
 
-        // Đẩy vị trí spawn ban đầu ra đúng làn
         Vector3 startDir = (waypoints.Length > 1) ? (waypoints[1].position - waypoints[0].position).normalized : Vector3.right;
         Vector3 startPerp = new Vector3(-startDir.y, startDir.x, 0);
         transform.position = spawnPos + startPerp * offset;
@@ -123,11 +120,18 @@ public class EnemyMovement : MonoBehaviour
 
             if (attackTimer <= 0)
             {
-                AttackTower();
+                // [THAY ĐỔI]: Phân loại cận chiến và đánh xa
+                // Nếu là quái cận chiến (không có bulletPrefab) hoặc mất file Animation, chém ngay lập tức
+                if (bulletPrefab == null || enemyAnimation == null) 
+                {
+                    AttackTower();
+                }
+                // Nếu là quái bắn cung (có bulletPrefab), nó sẽ CHỜ Animation Event gọi hàm SpawnArrowEvent()
+                
                 attackTimer = attackCooldown;
             }
         }
-        else if (myPath != null && targetIndex < myPath.Length) // Kiểm tra mảng myPath
+        else if (myPath != null && targetIndex < myPath.Length) 
         {
             if (enemyAnimation != null) enemyAnimation.SetAttacking(false);
             MoveAlongPath();
@@ -138,7 +142,10 @@ public class EnemyMovement : MonoBehaviour
 
             if (attackTimer <= 0)
             {
-                AttackBase();
+                if (bulletPrefab == null || enemyAnimation == null) 
+                {
+                    AttackBase();
+                }
                 attackTimer = attackCooldown;
             }
         }
@@ -166,6 +173,19 @@ public class EnemyMovement : MonoBehaviour
             }
         }
         currentTargetTower = nearestTower;
+    }
+
+    // --- HÀM NÀY ĐƯỢC GỌI BỞI LÁ CỜ ANIMATION EVENT (DÀNH CHO QUÁI BẮN CUNG) ---
+    public void SpawnArrowEvent()
+    {
+        if (currentTargetTower != null)
+        {
+            AttackTower();
+        }
+        else if (BaseHealth.Instance != null)
+        {
+            AttackBase();
+        }
     }
 
     void AttackTower()
@@ -207,7 +227,6 @@ public class EnemyMovement : MonoBehaviour
         }
     }
 
-    // --- DI CHUYỂN BÁM THEO PATH ĐÃ ĐƯỢC TÍNH SẴN ---
     void MoveAlongPath()
     {
         Vector3 targetPos = myPath[targetIndex];

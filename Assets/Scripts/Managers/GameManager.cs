@@ -40,6 +40,23 @@ public class GameManager : MonoBehaviour
         else Destroy(gameObject);
     }
 
+    void Update()
+    {
+        // --- CHEAT CODE TEST GAME ---
+        // Chỉ hoạt động khi đang chạy trong màn hình Unity Editor (không sợ người chơi bấm nhầm ở bản build thật)
+#if UNITY_EDITOR
+        // Kiểm tra xem người dùng có đang giữ cùng lúc 3 phím Q, W, E không
+        if (Input.GetKey(KeyCode.Q) && Input.GetKey(KeyCode.W) && Input.GetKey(KeyCode.E))
+        {
+            // Chỉ kích hoạt nếu game chưa kết thúc
+            if (currentState != GameState.Victory && currentState != GameState.GameOver)
+            {
+                Debug.Log("🚀 KÍCH HOẠT CHEAT: Thắng luôn!");
+                TriggerVictory();
+            }
+        }
+#endif
+    }
     void Start()
     {
         if (AudioManager.Instance != null) AudioManager.Instance.PlayGameplayBGM();
@@ -253,13 +270,17 @@ public class GameManager : MonoBehaviour
     public void SaveLevelProgress()
     {
         int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
-        int highestUnlocked = PlayerPrefs.GetInt("HighestUnlockedLevel", 1);
 
-        if (currentSceneIndex >= highestUnlocked)
+        // Kiểm tra nếu level vừa thắng lớn hơn hoặc bằng tiến trình cao nhất đang có
+        if (SaveManager.Instance != null && currentSceneIndex >= SaveManager.Instance.data.highestUnlockedLevel)
         {
-            PlayerPrefs.SetInt("HighestUnlockedLevel", currentSceneIndex + 1);
-            PlayerPrefs.Save();
-            Debug.Log($"💾 Đã mở khóa Màn tiếp theo: {currentSceneIndex + 1}");
+            // Mở khóa màn tiếp theo
+            SaveManager.Instance.data.highestUnlockedLevel = currentSceneIndex + 1;
+            
+            // Ra lệnh lưu vào ổ cứng!
+            SaveManager.Instance.SaveGame(); 
+            
+            Debug.Log($"💾 JSON: Đã mở khóa Màn tiếp theo: {currentSceneIndex + 1}");
         }
     }
     

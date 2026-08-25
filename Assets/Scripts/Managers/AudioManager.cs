@@ -23,19 +23,32 @@ public class AudioManager : MonoBehaviour
 
     void Awake()
     {
-        // Thiết lập Singleton không bị hủy khi chuyển Scene
+        // 1. Chỉ thiết lập Singleton ở Awake
         if (Instance == null)
         {
             Instance = this;
-            // Tải lại mức âm lượng đã lưu, mặc định là 1 (max) nếu mới chơi lần đầu
-            bgmSource.volume = PlayerPrefs.GetFloat("BGMVolume", 1f);
-            sfxSource.volume = PlayerPrefs.GetFloat("SFXVolume", 1f);
             DontDestroyOnLoad(gameObject);
         }
         else
         {
             Destroy(gameObject);
             return;
+        }
+    }
+
+    void Start()
+    {
+        // 2. Tải lại mức âm lượng từ file JSON (đã được SaveManager đọc xong ở Awake)
+        if (SaveManager.Instance != null)
+        {
+            bgmSource.volume = SaveManager.Instance.data.bgmVolume;
+            sfxSource.volume = SaveManager.Instance.data.sfxVolume;
+        }
+        else
+        {
+            // Đề phòng trường hợp lỗi chưa có SaveManager
+            bgmSource.volume = 1f;
+            sfxSource.volume = 1f;
         }
     }
 
@@ -72,14 +85,22 @@ public class AudioManager : MonoBehaviour
 
     // --- HÀM ĐIỀU CHỈNH ÂM LƯỢNG ---
     public void SetBGMVolume(float volume)
+{
+    bgmSource.volume = volume;
+    if (SaveManager.Instance != null)
     {
-        bgmSource.volume = volume;
-        PlayerPrefs.SetFloat("BGMVolume", volume); // Lưu lại cài đặt
+        SaveManager.Instance.data.bgmVolume = volume;
+        SaveManager.Instance.SaveGame();
     }
+}
 
     public void SetSFXVolume(float volume)
+{
+    sfxSource.volume = volume;
+    if (SaveManager.Instance != null)
     {
-        sfxSource.volume = volume;
-        PlayerPrefs.SetFloat("SFXVolume", volume); // Lưu lại cài đặt
+        SaveManager.Instance.data.sfxVolume = volume;
+        SaveManager.Instance.SaveGame();
     }
+}
 }

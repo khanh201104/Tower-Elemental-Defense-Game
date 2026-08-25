@@ -21,6 +21,7 @@ public class EnemyBullet : MonoBehaviour
             return;
         }
 
+        // 1. Tính toán hướng đi
         Vector3 dir = targetTower.position - transform.position;
         float distanceThisFrame = speed * Time.deltaTime;
 
@@ -30,6 +31,16 @@ public class EnemyBullet : MonoBehaviour
             return;
         }
 
+        // 2. [CODE MỚI] Xoay đầu mũi tên hướng về mục tiêu
+        if (dir != Vector3.zero)
+        {
+            // Tính góc xoay bằng toán học (hàm Atan2)
+            float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+            // Xoay GameObject theo trục Z
+            transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+        }
+
+        // 3. Di chuyển mũi tên tới mục tiêu
         transform.Translate(dir.normalized * distanceThisFrame, Space.World);
     }
 
