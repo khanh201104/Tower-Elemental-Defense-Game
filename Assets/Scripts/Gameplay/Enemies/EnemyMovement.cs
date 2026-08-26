@@ -100,6 +100,11 @@ public class EnemyMovement : MonoBehaviour
 
     void Update()
     {
+        if (spriteRenderer != null)
+        {
+            // Nhân với -100 để đảm bảo số Y nhỏ (đứng thấp) sẽ tạo ra Order lớn (nổi lên trên)
+            spriteRenderer.sortingOrder = Mathf.RoundToInt(transform.position.y * -100f);
+        }
         if (slowTimer > 0)
         {
             slowTimer -= Time.deltaTime;

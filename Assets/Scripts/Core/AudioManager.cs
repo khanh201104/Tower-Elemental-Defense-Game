@@ -55,7 +55,18 @@ public class AudioManager : MonoBehaviour
     // --- HÀM PHÁT BGM ---
     public void PlayMainMenuBGM()
     {
-        if (bgmSource.clip == mainMenuBGM) return; // Nếu đang phát rồi thì thôi
+        // Kiểm tra xem có đúng là đĩa nhạc Main Menu đang nằm trong loa không
+        if (bgmSource.clip == mainMenuBGM) 
+        {
+            // Nếu đúng đĩa nhạc nhưng loa đang bị tắt thì bật lên lại
+            if (!bgmSource.isPlaying)
+            {
+                bgmSource.Play();
+            }
+            return; // Nếu đang phát rồi thì thôi, thoát hàm để không bị hát lại từ đầu
+        }
+
+        // Nếu là bài nhạc khác, tiến hành đổi đĩa và phát
         bgmSource.clip = mainMenuBGM;
         bgmSource.loop = true;
         bgmSource.Play();
@@ -63,7 +74,15 @@ public class AudioManager : MonoBehaviour
 
     public void PlayGameplayBGM()
     {
-        if (bgmSource.clip == gameplayBGM) return;
+        if (bgmSource.clip == gameplayBGM) 
+        {
+            if (!bgmSource.isPlaying)
+            {
+                bgmSource.Play();
+            }
+            return;
+        }
+
         bgmSource.clip = gameplayBGM;
         bgmSource.loop = true;
         bgmSource.Play();
