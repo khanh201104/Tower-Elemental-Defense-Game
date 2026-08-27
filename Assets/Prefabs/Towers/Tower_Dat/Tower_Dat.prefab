@@ -278,9 +278,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63f99ce5ead12fc47840d684ac1a295c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TowerHealth
-  maxHealth: 20
+  maxHealth: 120
   enableRegen: 1
-  regenAmount: 1
+  regenAmount: 5
   regenInterval: 1
   hpBarOffset: {x: 0, y: 0.65, z: 0}
   hideWhenFull: 1

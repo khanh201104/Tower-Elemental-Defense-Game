@@ -52,7 +52,7 @@ public class TowerAttack : MonoBehaviour
 
         if (nearestEnemy != null)
         {
-            GameObject bulletGO = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
+            GameObject bulletGO = SimplePool.Spawn(bulletPrefab, transform.position, Quaternion.identity);
             Bullet bulletScript = bulletGO.GetComponent<Bullet>();
 
             if (bulletScript != null)

@@ -15,22 +15,22 @@ MonoBehaviour:
   defaultWaves:
   - enemyGroups:
     - enemyPrefab: {fileID: 5395144246103255306, guid: 204fa4def86c3f9489ff0f603f1f6a8b, type: 3}
-      count: 10
-      rate: 1
+      count: 5
+      rate: 6
   - enemyGroups:
     - enemyPrefab: {fileID: 5395144246103255306, guid: 204fa4def86c3f9489ff0f603f1f6a8b, type: 3}
-      count: 10
-      rate: 1
+      count: 12
+      rate: 3
     - enemyPrefab: {fileID: 5395144246103255306, guid: cfa32921e7967a8458795e7e8e6cd058, type: 3}
-      count: 5
-      rate: 2
+      count: 2
+      rate: 6
   - enemyGroups:
     - enemyPrefab: {fileID: 5395144246103255306, guid: 204fa4def86c3f9489ff0f603f1f6a8b, type: 3}
-      count: 10
-      rate: 1
-    - enemyPrefab: {fileID: 5395144246103255306, guid: cfa32921e7967a8458795e7e8e6cd058, type: 3}
-      count: 5
+      count: 9
       rate: 2
+    - enemyPrefab: {fileID: 5395144246103255306, guid: cfa32921e7967a8458795e7e8e6cd058, type: 3}
+      count: 4
+      rate: 4
     - enemyPrefab: {fileID: 5395144246103255306, guid: 28b60313440ba6d4e9d785cf3c43c718, type: 3}
       count: 1
       rate: 1

@@ -125,7 +125,7 @@ public class Bullet : MonoBehaviour
         }
 
         // 4. XÓA VIÊN ĐẠN
-        Destroy(gameObject);
+        SimplePool.Despawn(gameObject);
     }
 
     void ApplyEffectsToEnemy(EnemyHealth eHealth, GameObject enemyGo, int finalDamage)
@@ -156,6 +156,16 @@ public class Bullet : MonoBehaviour
         if (isBurnBullet)
         {
             eHealth.ApplyBurn(burnDamagePerTick, burnDuration, burnTickRate);
+        }
+    }
+
+    void OnEnable()
+    {
+        // Nếu viên đạn của bạn có cái đuôi (TrailRenderer), ta cần xóa vệt sáng cũ đi
+        TrailRenderer trail = GetComponent<TrailRenderer>();
+        if (trail != null)
+        {
+            trail.Clear(); // Xóa lịch sử vệt đuôi cũ
         }
     }
 

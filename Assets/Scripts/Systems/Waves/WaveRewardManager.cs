@@ -95,13 +95,27 @@ public class WaveRewardManager : MonoBehaviour
     public void OnSelectOption1()
     {
         if (AudioManager.Instance != null) AudioManager.Instance.PlayButtonClick();
-        if (!CheckBenchSpace()) return;
 
-        if (selectedOption1Tower != null && selectedOption1Tower.towerPrefab != null)
+        // 1. Kiểm tra xem Hàng chờ còn trống không
+        if (BenchManager.Instance != null && BenchManager.Instance.HasEmptySlot())
         {
-            GameObject towerObj = Instantiate(selectedOption1Tower.towerPrefab);
-            BenchManager.Instance.AddTowerToBench(towerObj);
-            Debug.Log($"🎁 Đã nhận tháp công khai: {selectedOption1Tower.towerName}");
+            // CÒN TRỐNG: Nhận tháp bình thường
+            if (selectedOption1Tower != null && selectedOption1Tower.towerPrefab != null)
+            {
+                GameObject towerObj = Instantiate(selectedOption1Tower.towerPrefab);
+                BenchManager.Instance.AddTowerToBench(towerObj);
+                Debug.Log($"🎁 Đã nhận tháp công khai: {selectedOption1Tower.towerName}");
+            }
+        }
+        else
+        {
+            // ĐẦY KHO: Đền bù 75% giá trị tháp
+            int compensationGold = Mathf.RoundToInt(baseTowerPrice * 0.75f);
+            if (GameEconomy.Instance != null)
+            {
+                GameEconomy.Instance.AddGold(compensationGold);
+            }
+            Debug.Log($"⚠️ Hàng chờ đầy! Bồi thường {compensationGold} Vàng thay cho tháp {selectedOption1Tower?.towerName}.");
         }
 
         ClosePanel();
@@ -110,22 +124,35 @@ public class WaveRewardManager : MonoBehaviour
     public void OnSelectOption2()
     {
         if (AudioManager.Instance != null) AudioManager.Instance.PlayButtonClick();
-        if (!CheckBenchSpace()) return;
 
-        BasicTowerInfo randomTower = basicTowers[Random.Range(0, basicTowers.Length)];
-        if (randomTower != null && randomTower.towerPrefab != null)
+        // Tiền thưởng gốc mặc định của thẻ này là 10%
+        int totalBonusGold = Mathf.RoundToInt(baseTowerPrice * 0.1f); 
+
+        if (BenchManager.Instance != null && BenchManager.Instance.HasEmptySlot())
         {
-            GameObject towerObj = Instantiate(randomTower.towerPrefab);
-            BenchManager.Instance.AddTowerToBench(towerObj);
+            // CÒN TRỐNG: Nhận tháp ngẫu nhiên + 10% Vàng
+            BasicTowerInfo randomTower = basicTowers[Random.Range(0, basicTowers.Length)];
+            if (randomTower != null && randomTower.towerPrefab != null)
+            {
+                GameObject towerObj = Instantiate(randomTower.towerPrefab);
+                BenchManager.Instance.AddTowerToBench(towerObj);
+                Debug.Log($"🎁 Đã nhận: {randomTower.towerName} + {totalBonusGold} Vàng!");
+            }
+        }
+        else
+        {
+            // ĐẦY KHO: Bồi thường thêm 65% giá trị tháp (Tổng cộng nhận 85%)
+            int compensationGold = Mathf.RoundToInt(baseTowerPrice * 0.65f);
+            totalBonusGold += compensationGold; 
+            Debug.Log($"⚠️ Hàng chờ đầy! Bồi thường tháp thành {compensationGold} Vàng. Tổng nhận: {totalBonusGold} Vàng.");
         }
 
-        int bonusGold = Mathf.RoundToInt(baseTowerPrice * 0.1f);
+        // Cộng tiền cho người chơi (Dù đầy hay trống thì đều được cộng tiền)
         if (GameEconomy.Instance != null)
         {
-            GameEconomy.Instance.AddGold(bonusGold);
+            GameEconomy.Instance.AddGold(totalBonusGold);
         }
 
-        Debug.Log($"🎁 Đã nhận: {randomTower.towerName} + {bonusGold} Vàng!");
         ClosePanel();
     }
 
@@ -142,15 +169,7 @@ public class WaveRewardManager : MonoBehaviour
         ClosePanel();
     }
 
-    private bool CheckBenchSpace()
-    {
-        if (BenchManager.Instance == null || !BenchManager.Instance.HasEmptySlot())
-        {
-            Debug.LogWarning("❌ Hàng chờ (Bench) đã đầy! Hãy dọn chỗ trước.");
-            return false;
-        }
-        return true;
-    }
+   
 
     private void ClosePanel()
     {

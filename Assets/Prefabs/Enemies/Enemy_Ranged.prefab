@@ -201,9 +201,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c595ae95178a21c43bb4c638d5b8939f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMovement
-  baseSpeed: 1.5
+  baseSpeed: 1
   attackRange: 2
-  damage: 1
+  damage: 5
   attackCooldown: 1
   bulletPrefab: {fileID: 3132420738338756144, guid: f785c73f58445ed438d2b5361dddb788, type: 3}
   firePoint: {fileID: 0}
@@ -219,8 +219,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e5a6fd7a9f9ef52439baa6b6d4700d0a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
-  hp: 3
-  goldReward: 20
+  hp: 40
+  goldReward: 15
   fireVFX: {fileID: 965538164606666294}
   slowVFX: {fileID: 6409110694150465834}
   burnColor: {r: 1, g: 0.26536658, b: 0.19999999, a: 1}

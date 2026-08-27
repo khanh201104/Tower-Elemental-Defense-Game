@@ -203,7 +203,7 @@ public class WaveSpawner : MonoBehaviour
             // NẾU GẠCH CỦA BẠN TO/NHỎ HƠN, hãy chỉnh số 0.5f này cho khớp nhé!
             float laneOffset = (i % 2 == 0) ? -0.5f : 0.5f; 
 
-            GameObject enemy = Instantiate(group.enemyPrefab, spawnPoint.position, Quaternion.identity);
+            GameObject enemy = SimplePool.Spawn(group.enemyPrefab, spawnPoint.position, Quaternion.identity);
 
             // Gửi độ lệch cho quái
             EnemyMovement movementScript = enemy.GetComponent<EnemyMovement>();

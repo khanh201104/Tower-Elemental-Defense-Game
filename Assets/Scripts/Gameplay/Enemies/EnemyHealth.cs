@@ -3,6 +3,7 @@ using UnityEngine;
 public class EnemyHealth : MonoBehaviour
 {
     public int hp = 3;
+    private int maxHp;
     public int goldReward = 15;
 
     [Header("VFX Hiệu Ứng (Kéo Object con vào đây)")]
@@ -26,6 +27,11 @@ public class EnemyHealth : MonoBehaviour
     private int burnDamage = 0;
     private float burnTickInterval = 1f;
 
+    void Awake()
+    {
+        // Ghi nhớ mức máu gốc được thiết lập ở Inspector (vd: Goblin = 3, Boss = 50)
+        maxHp = hp; 
+    }
     void Start()
     {
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
@@ -127,7 +133,29 @@ public class EnemyHealth : MonoBehaviour
         }
 
         // 5. Hủy GameObject sau 0.6 giây để chạy xong animation chết
-        Destroy(gameObject, 0.6f);
+        SimplePool.Despawn(gameObject, 0.6f);
+    }
+    void OnEnable()
+    {
+        isDead = false;
+        hp = maxHp; // PHỤC HỒI FULL MÁU GỐC!
+        burnTimer = 0f;
+        
+        // Bật lại các chức năng đã bị tắt lúc chết
+        if (enemyCollider != null) enemyCollider.enabled = true;
+        if (enemyMovement != null) enemyMovement.enabled = true;
+        if (spriteRenderer != null) spriteRenderer.color = Color.white;
+        
+        gameObject.tag = "Enemy"; 
+    }
+
+    // Hàm này sẽ được WaveSpawner gọi tới để tăng độ khó qua từng level
+    public void ApplyDifficultyMultiplier(float multiplier)
+    {
+        // Tính toán lượng máu tối đa mới
+        maxHp = Mathf.RoundToInt(maxHp * multiplier); 
+        // Bơm đầy máu theo giới hạn mới
+        hp = maxHp; 
     }
 
     public void ApplyBurn(int damagePerTick, float duration, float interval)

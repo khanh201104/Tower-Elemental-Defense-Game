@@ -54,6 +54,11 @@ public class EnemyMovement : MonoBehaviour
     // --- HÀM TẠO SẴN ĐƯỜNG ĐI SONG SONG (LANE) ---
     public void InitializePathOffset(float offset, Vector3 spawnPos)
     {
+        targetIndex = 0;          // Bắt buộc quái phải đi lại từ điểm xuất phát (Waypoint 0)
+        currentSpeed = baseSpeed; // Trả lại tốc độ gốc (lỡ kiếp trước nó chết lúc đang bị làm chậm)
+        slowTimer = 0f;           // Xóa hiệu ứng làm chậm cũ
+        // -----------------------------------------------------
+
         if (waypoints == null || waypoints.Length == 0) return;
 
         myPath = new Vector3[waypoints.Length];
@@ -201,7 +206,7 @@ public class EnemyMovement : MonoBehaviour
         {
             if (AudioManager.Instance != null) AudioManager.Instance.PlayEnemyShoot();
             Vector3 spawnPos = firePoint != null ? firePoint.position : transform.position;
-            GameObject bulletGO = Instantiate(bulletPrefab, spawnPos, Quaternion.identity);
+            GameObject bulletGO = SimplePool.Spawn(bulletPrefab, spawnPos, Quaternion.identity);
             EnemyBullet bulletScript = bulletGO.GetComponent<EnemyBullet>();
             if (bulletScript != null) bulletScript.Seek(currentTargetTower, damage);
         }
@@ -221,7 +226,7 @@ public class EnemyMovement : MonoBehaviour
         {
             if (AudioManager.Instance != null) AudioManager.Instance.PlayEnemyShoot();
             Vector3 spawnPos = firePoint != null ? firePoint.position : transform.position;
-            GameObject bulletGO = Instantiate(bulletPrefab, spawnPos, Quaternion.identity);
+            GameObject bulletGO = SimplePool.Spawn(bulletPrefab, spawnPos, Quaternion.identity);
             EnemyBullet bulletScript = bulletGO.GetComponent<EnemyBullet>();
             if (bulletScript != null) bulletScript.Seek(BaseHealth.Instance.transform, damage);
         }

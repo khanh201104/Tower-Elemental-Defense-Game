@@ -247,10 +247,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6a877768a4ac5a4e88da50fd0e43ad8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameEconomy
-  gold: 100
-  towerPrefab: {fileID: 5620580406772248784, guid: 9d6db4d381b63374eb2a67d164f71591, type: 3}
-  towerCost: 50
-  shopSpawnPoint: {fileID: 1604147612}
+  gold: 50
 --- !u!1 &59780876 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5196414710053205209, guid: 6b32ab38f33c0f344943c13a71551391, type: 3}
@@ -353,18 +350,24 @@ MonoBehaviour:
   waves:
   - enemyGroups:
     - enemyPrefab: {fileID: 5395144246103255306, guid: 204fa4def86c3f9489ff0f603f1f6a8b, type: 3}
-      count: 10
-      rate: 2
-    - enemyPrefab: {fileID: 5395144246103255306, guid: cfa32921e7967a8458795e7e8e6cd058, type: 3}
-      count: 10
-      rate: 2
+      count: 5
+      rate: 6
   - enemyGroups:
+    - enemyPrefab: {fileID: 5395144246103255306, guid: 204fa4def86c3f9489ff0f603f1f6a8b, type: 3}
+      count: 12
+      rate: 3
     - enemyPrefab: {fileID: 5395144246103255306, guid: cfa32921e7967a8458795e7e8e6cd058, type: 3}
-      count: 10
-      rate: 1
-  - enemyGroups:
-    - enemyPrefab: {fileID: 5395144246103255306, guid: 28b60313440ba6d4e9d785cf3c43c718, type: 3}
       count: 2
+      rate: 6
+  - enemyGroups:
+    - enemyPrefab: {fileID: 5395144246103255306, guid: 204fa4def86c3f9489ff0f603f1f6a8b, type: 3}
+      count: 4
+      rate: 2
+    - enemyPrefab: {fileID: 5395144246103255306, guid: cfa32921e7967a8458795e7e8e6cd058, type: 3}
+      count: 4
+      rate: 4
+    - enemyPrefab: {fileID: 5395144246103255306, guid: 28b60313440ba6d4e9d785cf3c43c718, type: 3}
+      count: 1
       rate: 1
   spawnPoint: {fileID: 937930885}
   currentLevel: 1

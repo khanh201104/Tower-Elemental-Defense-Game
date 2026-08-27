@@ -173,7 +173,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TowerAttack
   range: 5
-  fireRate: 2
+  fireRate: 1.7
   bulletPrefab: {fileID: 1871464989850264738, guid: ab8fe282936de6d4e98fad2c36cd9678, type: 3}
 --- !u!114 &2170583614563618469
 MonoBehaviour:
@@ -187,9 +187,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63f99ce5ead12fc47840d684ac1a295c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TowerHealth
-  maxHealth: 30
-  enableRegen: 0
-  regenAmount: 2
+  maxHealth: 300
+  enableRegen: 1
+  regenAmount: 5
   regenInterval: 1
   hpBarOffset: {x: 0, y: 0.65, z: 0}
   hideWhenFull: 1

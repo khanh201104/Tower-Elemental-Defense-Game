@@ -8,16 +8,22 @@ public class SettingsMenu : MonoBehaviour
 
     void Start()
     {
-        // Khi mở bảng Settings, kéo thanh Slider về đúng vị trí âm lượng hiện tại
+        // [ĐÃ SỬA] Kéo dữ liệu từ "Két sắt JSON" thay vì PlayerPrefs
         if (bgmSlider != null) 
         {
-            bgmSlider.value = PlayerPrefs.GetFloat("BGMVolume", 1f);
+            if (SaveManager.Instance != null)
+            {
+                bgmSlider.value = SaveManager.Instance.data.bgmVolume;
+            }
             bgmSlider.onValueChanged.AddListener(UpdateBGM);
         }
 
         if (sfxSlider != null) 
         {
-            sfxSlider.value = PlayerPrefs.GetFloat("SFXVolume", 1f);
+            if (SaveManager.Instance != null)
+            {
+                sfxSlider.value = SaveManager.Instance.data.sfxVolume;
+            }
             sfxSlider.onValueChanged.AddListener(UpdateSFX);
         }
     }
