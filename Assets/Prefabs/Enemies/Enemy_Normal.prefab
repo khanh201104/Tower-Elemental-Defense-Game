@@ -105,6 +105,7 @@ GameObject:
   - component: {fileID: 8697005906815570129}
   - component: {fileID: 1693619669780114245}
   - component: {fileID: -542127062255045266}
+  - component: {fileID: 657344191853964462}
   m_Layer: 0
   m_Name: Enemy_Normal
   m_TagString: Enemy
@@ -183,7 +184,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 1.25, y: 1.25}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -200,9 +201,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c595ae95178a21c43bb4c638d5b8939f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMovement
-  baseSpeed: 2
-  attackRange: 1
-  damage: 2
+  baseSpeed: 1.5
+  attackRange: 0.8
+  damage: 10
   attackCooldown: 0.5
   bulletPrefab: {fileID: 0}
   firePoint: {fileID: 0}
@@ -218,8 +219,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e5a6fd7a9f9ef52439baa6b6d4700d0a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
-  hp: 3
-  goldReward: 15
+  hp: 60
+  goldReward: 10
   fireVFX: {fileID: 4028968831957045167}
   slowVFX: {fileID: 8923652580234199952}
   burnColor: {r: 1, g: 0.27374882, b: 0.19999999, a: 1}
@@ -273,8 +274,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7983fdb286877b84e81db5cb0b57bea8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAnimation
-  wobbleSpeed: 10
-  wobbleAngle: 7
+--- !u!95 &657344191853964462
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5395144246103255306}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: a2867b7107416974ab4e17a70ccb8af1, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &8923652580234199952
 GameObject:
   m_ObjectHideFlags: 0
